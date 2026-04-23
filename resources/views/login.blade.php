@@ -1,54 +1,84 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-gray-50">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistem Informasi Manajemen Organisasi</title>
+    <title>Login - PDM Muhammadiyah Kota Batam</title>
     @vite('resources/css/app.css')
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-muhammadiyah { background-color: #005b00; }
+        .text-muhammadiyah { color: #005b00; }
+    </style>
 </head>
-<body class="h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+<body class="bg-white h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-lg border border-gray-100">
-        <div>
-            <div class="mx-auto h-16 w-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-blue-600">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-muhammadiyah mb-1">Selamat Datang</h1>
+        <p class="text-gray-500 font-medium text-sm">masuk ke dashboard Pimpinan Daerah Muhammadiyah</p>
+    </div>
+
+    <div class="bg-white p-8 rounded-[2rem] shadow-[0_0_40px_rgba(0,0,0,0.05)] border border-gray-100 w-full max-w-[400px]">
+
+        @if($errors->has('loginError'))
+            <div class="bg-red-50 text-red-600 p-3 rounded-xl text-sm mb-5 text-center font-medium">
+                {{ $errors->first('loginError') }}
             </div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-                Selamat Datang
-            </h2>
-            <p class="mt-2 text-center text-sm text-gray-600">
-                Silakan masuk ke akun Anda
-            </p>
-        </div>
+        @endif
 
-        <form class="mt-8 space-y-6" action="#" method="POST">
+        <form action="/login" method="POST">
             @csrf
 
-            <div class="rounded-md shadow-sm -space-y-px">
-                <div class="mb-4">
-                    <label for="username" class="sr-only">Username</label>
-                    <input id="username" name="username" type="text" required class="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200" placeholder="Username (misal: calvin)">
-                </div>
-
-                <div>
-                    <label for="password" class="sr-only">Password</label>
-                    <input id="password" name="password" type="password" required class="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200" placeholder="Password">
+            <div class="mb-5">
+                <label class="block text-muhammadiyah font-bold text-sm mb-2">Username/Id anggota</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-green-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <input type="text" name="username" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" placeholder="Username" required>
                 </div>
             </div>
 
-            <div>
-                <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md transition duration-200">
-                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                        <svg class="h-5 w-5 text-blue-500 group-hover:text-blue-400 transition duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <div class="mb-5">
+                <label class="block text-muhammadiyah font-bold text-sm mb-2">kata sandi</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-green-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                         </svg>
                     </span>
-                    Masuk ke Sistem
-                </button>
+                    <input type="password" name="password" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" placeholder="masukkan kata sandi" required>
+                </div>
             </div>
+
+            <div class="mb-8">
+                <label class="block text-muhammadiyah font-bold text-sm mb-2">Masuk sebagai</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-yellow-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <select name="id_role" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm appearance-none focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
+                        <option value="R99">Superadmin (PDM pusat)</option>
+                        <option value="R01">Admin Cabang</option>
+                        <option value="R02">Pengurus Masjid</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-muhammadiyah text-white font-bold py-3 rounded-lg hover:bg-green-800 transition duration-200">
+                Masuk
+            </button>
         </form>
+
+        <div class="mt-8 text-center">
+            <p class="text-gray-500 text-xs mb-1">Sistem ini hanya untuk anggota resmi</p>
+            <p class="text-muhammadiyah font-bold text-xs">PDM Muhammadiyah Kota Batam</p>
+        </div>
     </div>
 
 </body>
