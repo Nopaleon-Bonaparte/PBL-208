@@ -38,9 +38,12 @@
                     </div>
                 </button>
 
-                <button class="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded font-bold text-sm shadow transition">
-                    LOGOUT
-                </button>
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded font-bold text-sm shadow transition cursor-pointer">
+                        LOGOUT
+                    </button>
+                </form>
 
                 <div class="flex items-center gap-2 cursor-pointer">
                     <div class="w-10 h-10 bg-gray-300 rounded-full overflow-hidden border-2 border-green-600">

@@ -14,7 +14,9 @@
 </head>
 <body class="bg-white h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="text-center mb-8">
+    <div class="text-center mb-8 flex flex-col items-center">
+        <img src="{{ asset('images/logo-muhammadiyah-official.png') }}" alt="Logo Muhammadiyah" class="w-24 h-24 object-contain mb-4 rounded-full border-2 border-gray-100 shadow-sm">
+
         <h1 class="text-4xl font-bold text-muhammadiyah mb-1">Selamat Datang</h1>
         <p class="text-gray-500 font-medium text-sm">masuk ke dashboard Pimpinan Daerah Muhammadiyah</p>
     </div>
