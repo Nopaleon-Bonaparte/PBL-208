@@ -67,6 +67,7 @@
                     <select name="id_role" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm appearance-none focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                         <option value="R99">Superadmin (PDM pusat)</option>
                         <option value="R01">Admin Cabang</option>
+                        <option value="R03">Admin Ranting</option>
                         <option value="R02">Pengurus Masjid</option>
                     </select>
                 </div>

@@ -63,7 +63,8 @@
 
                     <div>
                         <p class="text-xs font-bold text-gray-400 mb-2 px-3 tracking-wider">DASHBOARD</p>
-                        <a href="#" class="flex items-center gap-3 bg-[#f6f8eb] text-green-800 px-3 py-2.5 rounded-lg font-semibold">
+                        <!-- LINK INI SUDAH DIUBAH KE /dashboard -->
+                        <a href="/dashboard" class="flex items-center gap-3 bg-[#f6f8eb] text-green-800 px-3 py-2.5 rounded-lg font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                             </svg>
@@ -73,7 +74,8 @@
 
                     <div>
                         <p class="text-xs font-bold text-gray-400 mb-2 px-3 tracking-wider">PERSETUJUAN</p>
-                        <a href="#" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
+                        <!-- LINK INI SUDAH DIUBAH KE /superadmin/persetujuan -->
+                        <a href="/superadmin/persetujuan" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 019 9v.375M10.125 2.25A3.375 3.375 0 0113.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375M9 15l2.25 2.25L15 12" />
                             </svg>
@@ -257,7 +259,8 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-bold text-gray-900 text-lg">Antrian Persetujuan</h3>
-                            <a href="#" class="text-green-700 font-semibold text-sm hover:underline">Lihat Semua</a>
+                            <!-- LINK INI JUGA SUDAH DIUBAH KE /superadmin/persetujuan -->
+                            <a href="/superadmin/persetujuan" class="text-green-700 font-semibold text-sm hover:underline">Lihat Semua</a>
                         </div>
 
                         <div class="space-y-4 mb-6">
@@ -270,12 +273,13 @@
                             </div>
                         </div>
 
-                        <button class="w-full py-3 border border-gray-200 rounded-lg text-gray-600 font-semibold text-sm hover:bg-gray-50 transition flex items-center justify-center gap-2">
+                        <!-- LINK BUTTON INI JUGA UDAH DIUBAH -->
+                        <a href="/superadmin/persetujuan" class="w-full py-3 border border-gray-200 rounded-lg text-gray-600 font-semibold text-sm hover:bg-gray-50 transition flex items-center justify-center gap-2">
                             Lihat Semua Pengajuan
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
-                        </button>
+                        </a>
                     </div>
 
                 </div>

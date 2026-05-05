@@ -55,6 +55,10 @@ Route::get('/dashboard', function () {
             'total_masjid'
         ));
     }
+    else if (session('id_role') == 'R03') {
+        // Jika Admin Ranting (Kelurahan): Tampilkan dashboard ranting
+        return view('admin_ranting.dashboard');
+    }
     else if (session('id_role') == 'R02') {
         // Jika Pengurus Masjid (Takmir): Tampilkan dashboard masjid
         return view('pengurus_masjid.dashboard');
@@ -62,4 +66,13 @@ Route::get('/dashboard', function () {
 
     // Jika masuk tapi role-nya tidak dikenal
     return "Maaf, akun Anda tidak memiliki akses ke halaman dashboard manapun.";
+});
+
+// --- RUTE HALAMAN DALAM SUPERADMIN ---
+Route::get('/superadmin/persetujuan', function () {
+    // Pastikan cuma Superadmin (R99) yang bisa buka
+    if (session('id_role') != 'R99') {
+        return redirect('/dashboard');
+    }
+    return view('superadmin.persetujuan');
 });
