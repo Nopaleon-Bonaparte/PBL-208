@@ -22,7 +22,7 @@
                     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight">PDM Kota Batam</h1>
+                    <h1 class="font-bold text-lg leading-tight">PDM Kodsdfdsta Batam</h1>
                     <p class="text-xs text-green-200">Sistem Informasi Manajemen Organisasi</p>
                 </div>
             </div>
