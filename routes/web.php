@@ -1,78 +1,38 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SuperadminController;
 
-// 1. Halaman awal otomatis lempar ke login
-Route::get('/', function () {
-    return redirect('/login');
-});
+// 1. Awal
+Route::get('/', function () { return redirect('/login'); });
 
-// 2. Urusan Login & Logout
+// 2. Login & Logout
 Route::get('/login', function () {
-    // Jika sudah login, jangan kasih halaman login lagi, langsung lempar ke dashboard
-    if (session('is_logged_in')) {
-        return redirect('/dashboard');
-    }
+    if (session('is_logged_in')) return redirect('/dashboard');
     return view('login');
 })->name('login');
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// 3. Dashboard (Mengarah ke Controller)
+Route::get('/dashboard', [SuperadminController::class, 'index']);
 
-// 3. AREA DASHBOARD (Multi-Role)
-Route::get('/dashboard', function () {
-    // Proteksi: Cek apakah user sudah login?
-    if (!session('is_logged_in')) {
-        return redirect('/login')->withErrors(['loginError' => 'Login dulu bos!']);
-    }
+// 4. Rute Superadmin (Mengarah ke Controller)
+Route::get('/superadmin/persetujuan', [SuperadminController::class, 'persetujuan']);
+Route::get('/superadmin/riwayat', [SuperadminController::class, 'riwayat']);
 
-    // Ambil data umum dari database
-    $total_user = DB::table('user')->count();
-    $total_cabang = DB::table('cabang')->where('status_keaktifan_cabang', 'Aktif')->count();
-    $total_ranting = DB::table('ranting')->where('status_keaktifan_ranting', 'Aktif')->count();
-    $total_masjid = DB::table('masjid')->count();
-    $masjid_terdaftar = DB::table('masjid')->where('status_legalitas', 'Terdaftar')->count();
-
-    // --- LOGIKA PEMBAGIAN DASHBOARD BERDASARKAN ROLE ---
-
-    if (session('id_role') == 'R99') {
-        // Jika Superadmin (Pusat): Tampilkan semua data
-        return view('superadmin.dashboard', compact(
-            'total_user',
-            'total_cabang',
-            'total_ranting',
-            'total_masjid',
-            'masjid_terdaftar'
-        ));
-    }
-    else if (session('id_role') == 'R01') {
-        // Jika Admin Cabang (Wilayah): Tampilkan data yang relevan saja
-        return view('admin_cabang.dashboard', compact(
-            'total_ranting',
-            'total_masjid'
-        ));
-    }
-    else if (session('id_role') == 'R03') {
-        // Jika Admin Ranting (Kelurahan): Tampilkan dashboard ranting
-        return view('admin_ranting.dashboard');
-    }
-    else if (session('id_role') == 'R02') {
-        // Jika Pengurus Masjid (Takmir): Tampilkan dashboard masjid
-        return view('pengurus_masjid.dashboard');
-    }
-
-    // Jika masuk tapi role-nya tidak dikenal
-    return "Maaf, akun Anda tidak memiliki akses ke halaman dashboard manapun.";
+// 5. Route Monitoring Cabang & Ranting (Direct View)
+Route::get('/superadmin/status-cabang', function () {
+    return view('superadmin.status-cabang');
 });
 
-// --- RUTE HALAMAN DALAM SUPERADMIN ---
-Route::get('/superadmin/persetujuan', function () {
-    // Pastikan cuma Superadmin (R99) yang bisa buka
-    if (session('id_role') != 'R99') {
-        return redirect('/dashboard');
-    }
-    return view('superadmin.persetujuan');
+Route::get('/superadmin/status-ranting', function () {
+    return view('superadmin.status-ranting');
+});
+
+// 6.Route untuk Status Masjid dan Musholla
+Route::get('/superadmin/status-masjid', function () {
+    return view('superadmin.status-masjid');
 });
