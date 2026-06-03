@@ -40,13 +40,13 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <p class="text-gray-500 text-sm font-medium mb-1">Total Ranting</p>
-                    <h3 class="text-3xl font-bold text-gray-800">{{ $total_ranting }}</h3>
+                    {{-- <h3 class="text-3xl font-bold text-gray-800">{{ $total_ranting }}</h3> --}}
                     <p class="text-xs text-green-600 mt-2 font-bold">Di wilayah cabang Anda</p>
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <p class="text-gray-500 text-sm font-medium mb-1">Masjid Terkelola</p>
-                    <h3 class="text-3xl font-bold text-gray-800">{{ $total_masjid }}</h3>
+                    {{-- <h3 class="text-3xl font-bold text-gray-800">{{ $total_masjid }}</h3> --}}
                     <p class="text-xs text-blue-600 mt-2 font-bold">Aktif beroperasi</p>
                 </div>
 

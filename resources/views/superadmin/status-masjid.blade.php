@@ -12,7 +12,6 @@
 
     <div class="min-h-screen flex flex-col">
 
-        <!-- Header -->
         <header class="bg-green-800 text-white px-6 py-3 flex justify-between items-center z-20 shadow-md">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center p-1">
@@ -32,13 +31,10 @@
             </form>
         </header>
 
-        <!-- Area Konten Utama -->
         <div class="flex flex-1 overflow-hidden">
 
-            <!-- Panggil Sidebar -->
             @include('superadmin.sidebar')
 
-            <!-- Konten Halaman -->
             <main class="flex-1 p-8 overflow-y-auto">
 
                 <div class="flex justify-between items-end mb-6">
@@ -50,13 +46,20 @@
                         <div class="relative">
                             <input type="text" placeholder="Cari masjid/musholla..." class="pl-4 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-64 text-sm">
                         </div>
-                        <button class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow transition">
+
+                        <a href="/superadmin/status-masjid/tambah" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow transition inline-flex items-center">
                             + Tambah Data
-                        </button>
+                        </a>
                     </div>
                 </div>
 
-                <!-- Tabel Data Masjid/Musholla -->
+                @if(session('success'))
+                    <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg font-medium flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <table class="w-full text-left">
                         <thead class="bg-gray-50 border-b border-gray-200">
@@ -70,7 +73,6 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100">
 
-                            <!-- Baris 1 -->
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="p-4 text-sm font-bold text-gray-900">Masjid Raya Al-Falah</td>
                                 <td class="p-4 text-sm text-gray-600">Masjid</td>
@@ -83,7 +85,6 @@
                                 </td>
                             </tr>
 
-                            <!-- Baris 2 -->
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="p-4 text-sm font-bold text-gray-900">Musholla At-Taqwa</td>
                                 <td class="p-4 text-sm text-gray-600">Musholla</td>
@@ -96,7 +97,6 @@
                                 </td>
                             </tr>
 
-                            <!-- Baris 3 -->
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="p-4 text-sm font-bold text-gray-900">Masjid Baitul Makmur</td>
                                 <td class="p-4 text-sm text-gray-600">Masjid</td>
