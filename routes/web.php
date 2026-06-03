@@ -17,3 +17,7 @@ Route::get('/dashboard', function () {
 Route::get('/antrian-persetujuan', function () {
     return view('antrian-persetujuan');
 });
+
+Route::get('/data-masjid', function () {
+    return view('data-masjid');
+});
