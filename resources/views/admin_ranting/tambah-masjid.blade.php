@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin Ranting - PDM Kota Batam</title>
+    <title>Tambah Tempat Ibadah - PDM Kota Batam</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -48,7 +48,7 @@
 
                     <div>
                         <p class="text-xs font-bold text-gray-400 mb-2 px-3 tracking-wider">DASHBOARD</p>
-                        <a href="/admin-ranting/dashboard" class="flex items-center gap-3 bg-[#f6f8eb] text-green-800 px-3 py-2.5 rounded-lg font-semibold">
+                        <a href="/admin-ranting/dashboard" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                             </svg>
@@ -58,7 +58,7 @@
 
                     <div>
                         <p class="text-xs font-bold text-gray-400 mb-2 px-3 tracking-wider">MANAJEMEN</p>
-                        <a href="/admin-ranting/masjid" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
+                        <a href="/admin-ranting/masjid" class="flex items-center gap-3 bg-[#f6f8eb] text-green-800 px-3 py-2.5 rounded-lg font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
                             </svg>
@@ -77,54 +77,58 @@
 
             <main class="flex-1 p-8 overflow-y-auto">
 
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Ahlan wa Sahlan, {{ session('username') ?? 'Admin' }}</h2>
-                        <p class="text-gray-500 font-medium mt-1">Pantau perkembangan dan kegiatan ranting Anda di sini.</p>
-                    </div>
+                <div class="mb-6">
+                    <a href="/admin-ranting/masjid" class="text-green-700 hover:underline flex items-center gap-1 text-sm font-semibold mb-4 inline-flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                        </svg>
+                        Kembali
+                    </a>
+                    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Tambah Data Tempat Ibadah</h2>
+                    <p class="text-gray-500 font-medium mt-1">Masukkan informasi aset masjid atau musholla baru di tingkat ranting.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <form action="/admin-ranting/masjid/simpan" method="POST" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 max-w-3xl">
+                    @csrf
 
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start">
+                    <div class="mb-5">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Nama Tempat Ibadah</label>
+                        <input type="text" name="nama" placeholder="Contoh: Masjid Al-Ikhlas" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                         <div>
-                            <p class="text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase">Masjid / Musholla</p>
-                            <p class="text-4xl font-bold text-gray-900 mb-2">4</p>
-                            <p class="text-sm text-green-600 font-medium">Dalam naungan ranting</p>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Kategori</label>
+                            <select name="kategori" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-600 bg-white text-sm">
+                                <option value="Masjid">Masjid</option>
+                                <option value="Musholla">Musholla</option>
+                            </select>
                         </div>
-                        <div class="p-3 bg-green-50 text-green-800 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
-                            </svg>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Pengelola</label>
+                            <input type="text" name="pengelola" placeholder="Contoh: PRM Ranting A" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase">Total Jamaah</p>
-                            <p class="text-4xl font-bold text-gray-900 mb-2">125</p>
-                            <p class="text-sm text-blue-600 font-medium">Jamaah aktif</p>
-                        </div>
-                        <div class="p-3 bg-blue-50 text-blue-800 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-8 h-8">
-                                <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
+                    <div class="mb-8">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Status Lahan</label>
+                        <select name="status_lahan" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-600 bg-white text-sm">
+                            <option value="Wakaf Bersertifikat">Wakaf Bersertifikat</option>
+                            <option value="Proses Wakaf">Proses Wakaf</option>
+                            <option value="Hak Pakai">Hak Pakai</option>
+                            <option value="Sewa">Sewa</option>
+                        </select>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase">Laporan Kas Ranting</p>
-                            <p class="text-2xl font-bold text-gray-900 mb-2 mt-1">Rp 1.250.000</p>
-                            <p class="text-sm text-green-600 font-medium">Bulan ini</p>
-                        </div>
-                        <div class="p-3 bg-green-800 text-white rounded-xl shadow-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
+                    <div class="flex justify-end gap-3 border-t border-gray-100 pt-5">
+                        <a href="/admin-ranting/masjid" class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-semibold text-sm hover:bg-gray-50 transition">Batal</a>
+                        <button type="submit" class="px-5 py-2.5 bg-green-700 text-white rounded-lg font-semibold text-sm hover:bg-green-800 transition shadow-sm">Simpan Data</button>
                     </div>
+                </form>
 
-                </div>
+            </main>
+        </div>
+    </div>
 
-                <div class="bg-white rounded-2xl shadow
+</body>
+</html>

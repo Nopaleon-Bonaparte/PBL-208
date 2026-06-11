@@ -1,0 +1,25 @@
+<aside class="w-64 bg-white border-r border-gray-100 flex flex-col justify-between z-10 shadow-sm">
+    <div class="p-4 flex-1">
+        <div class="mb-6">
+            <p class="px-3 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Dashboard</p>
+            <a href="/admin-ranting/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm transition text-gray-600 hover:bg-gray-50 hover:text-green-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                Ringkasan Ranting
+            </a>
+        </div>
+
+        <div>
+            <p class="px-3 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Manajemen</p>
+
+            <a href="/admin-ranting/masjid" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm transition text-gray-700 bg-gray-50 border border-gray-200 hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18" /></svg>
+                Data Masjid/Musholla
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm transition text-gray-600 hover:bg-gray-50 hover:text-green-800 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+                Data Jamaah
+            </a>
+        </div>
+    </div>
+</aside>

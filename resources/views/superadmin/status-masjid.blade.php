@@ -47,10 +47,7 @@
                             <input type="text" placeholder="Cari masjid/musholla..." class="pl-4 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-64 text-sm">
                         </div>
 
-                        <a href="/superadmin/status-masjid/tambah" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow transition inline-flex items-center">
-                            + Tambah Data
-                        </a>
-                    </div>
+                        </div>
                 </div>
 
                 @if(session('success'))
@@ -105,16 +102,4 @@
                                     <span class="bg-blue-100 text-blue-800 border border-blue-200 text-xs px-2.5 py-1 rounded-md font-bold uppercase tracking-wide">Hak Pakai</span>
                                 </td>
                                 <td class="p-4 text-center">
-                                    <button class="text-green-700 font-semibold text-sm hover:underline">Detail</button>
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-
-            </main>
-        </div>
-    </div>
-</body>
-</html>
+                                    <button class="text-green-700 font-semibold text-sm hover:underline">Detail</button
