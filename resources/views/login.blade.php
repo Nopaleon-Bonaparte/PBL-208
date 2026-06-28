@@ -44,8 +44,8 @@
                 </div>
             </div>
 
-            <div class="mb-5">
-                <label class="block text-muhammadiyah font-bold text-sm mb-2">kata sandi</label>
+            <div class="mb-7">
+                <label class="block text-muhammadiyah font-bold text-sm mb-2">Kata Sandi</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-green-700">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -53,23 +53,6 @@
                         </svg>
                     </span>
                     <input type="password" name="password" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" placeholder="masukkan kata sandi" required>
-                </div>
-            </div>
-
-            <div class="mb-8">
-                <label class="block text-muhammadiyah font-bold text-sm mb-2">Masuk sebagai</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-yellow-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
-                        </svg>
-                    </span>
-                    <select name="id_role" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm appearance-none focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
-                        <option value="R99">Superadmin (PDM pusat)</option>
-                        <option value="R01">Admin Cabang</option>
-                        <option value="R03">Admin Ranting</option>
-                        <option value="R02">Pengurus Masjid</option>
-                    </select>
                 </div>
             </div>
 
