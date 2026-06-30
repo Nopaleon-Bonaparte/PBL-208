@@ -4,184 +4,105 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AkunAdminController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LegalitasController;
+use App\Http\Controllers\InventarisController;
+use App\Http\Controllers\TakmirController;
+use App\Http\Controllers\PengajuanController;
+use App\Http\Controllers\PersetujuanController;
+use App\Http\Controllers\MasjidController;
 
-Route::get('/', function () {
-    return redirect('/login');
-});
+// ── Root ──
+Route::get('/', fn() => redirect('/login'));
 
+// ── Auth ──
 Route::get('/login', function () {
     if (session('is_logged_in')) return redirect('/dashboard');
     return view('login');
 })->name('login');
-
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// ── Dashboard (role-based redirect) ──
 Route::get('/dashboard', function () {
-    if (!session('is_logged_in')) {
+    if (!session('is_logged_in'))
         return redirect('/login')->withErrors(['loginError' => 'Login dulu']);
-    }
 
-    $total_user       = DB::table('user')->count();
-    $total_cabang     = DB::table('cabang')->where('status_keaktifan_cabang', 'Aktif')->count();
-    $total_ranting    = DB::table('ranting')->where('status_keaktifan_ranting', 'Aktif')->count();
-    $total_masjid     = DB::table('masjid')->count();
-    $masjid_terdaftar = DB::table('masjid')->where('status_legalitas', 'Terdaftar')->count();
-
-    if (session('id_role') == 'R99') {
-        return view('superadmin.dashboard', compact(
-            'total_user', 'total_cabang', 'total_ranting',
-            'total_masjid', 'masjid_terdaftar'
-        ));
-    } elseif (session('id_role') == 'R01') {
-        return view('admin_cabang.membership', compact('total_ranting', 'total_masjid'));
-    } elseif (session('id_role') == 'R03') {
-        return view('admin_ranting.membership');
-    } elseif (session('id_role') == 'R02') {
-        return redirect('/masjid/informasi');
-    }
-
-    return 'Maaf, akun Anda tidak memiliki akses.';
-});
-
-Route::get('/superadmin/persetujuan', function () {
-    if (session('id_role') != 'R99') return redirect('/dashboard');
-    return view('superadmin.persetujuan');
-});
-
-// --- RUTE ADMIN CABANG (PCM) — satu group, tidak dobel ---
-Route::prefix('pcm')->group(function () {
-
-    $guardPCM = function () {
-        if (!session('is_logged_in'))
-            return redirect('/login')->withErrors(['loginError' => 'Login dulu']);
-        if (session('id_role') != 'R01')
-            return redirect('/dashboard');
-        return null;
+    return match(session('id_role')) {
+        'R99' => app(DashboardController::class)->index(),
+        'R01' => redirect('/pcm/membership'),
+        'R03' => redirect('/prm/membership'),
+        'R02' => redirect('/masjid/informasi'),
+        default => abort(403, 'Akun tidak memiliki akses.')
     };
-
-    Route::get('/membership', function () use ($guardPCM) {
-        if ($redirect = $guardPCM()) return $redirect;
-        return view('admin_cabang.membership');
-    });
-
-    Route::get('/sub-branches', function () use ($guardPCM) {
-        if ($redirect = $guardPCM()) return $redirect;
-        return view('admin_cabang.data-masjid');
-    });
-
-    Route::get('/legal-status', function () use ($guardPCM) {
-    if ($redirect = $guardPCM()) return $redirect;
-    return view('admin_cabang.legalitas-masjid'); // ← ganti
 });
 
-    Route::get('/ranting-status', function () use ($guardPCM) {
-        if ($redirect = $guardPCM()) return $redirect;
-        return view('admin_cabang.status-ranting'); // ← nama file yang ada
-    });
-
-    Route::get('/settings', function () use ($guardPCM) {
-    if ($redirect = $guardPCM()) return $redirect;
-    return view('admin_cabang.settings');
-});
-    
-});
-
-// --- RUTE ADMIN RANTING (PRM) ---
-Route::prefix('prm')->group(function () {
-
-    $guardPRM = function () {
-        if (!session('is_logged_in'))
-            return redirect('/login')->withErrors(['loginError' => 'Login dulu']);
-        if (session('id_role') != 'R03')
-            return redirect('/dashboard');
-        return null;
-    };
-
-    Route::get('/membership', function () use ($guardPRM) {
-        if ($redirect = $guardPRM()) return $redirect;
-        return view('admin_ranting.membership');
-    });
-
-    Route::get('/data-masjid', function () use ($guardPRM) {
-        if ($redirect = $guardPRM()) return $redirect;
-        return view('admin_ranting.data-masjid');
-    });
-
-    Route::get('/legalitas', function () use ($guardPRM) {
-        if ($redirect = $guardPRM()) return $redirect;
-        return view('admin_ranting.legalitas-masjid');
-    });
-
-    Route::get('/status-ranting', function () use ($guardPRM) {
-        if ($redirect = $guardPRM()) return $redirect;
-        return view('admin_ranting.status-ranting');
-    });
-
-    Route::get('/settings', function () use ($guardPRM) {
-        if ($redirect = $guardPRM()) return $redirect;
-        return view('admin_ranting.settings');
-    });
-
-});
-
-// --- RUTE PENGURUS MASJID ---
-Route::prefix('masjid')->group(function () {
-
-    $guardMasjid = function () {
-        if (!session('is_logged_in'))
-            return redirect('/login')->withErrors(['loginError' => 'Login dulu']);
-        if (session('id_role') != 'R02')
-            return redirect('/dashboard');
-        return null;
-    };
-
-    Route::get('/informasi', function () use ($guardMasjid) {
-        if ($redirect = $guardMasjid()) return $redirect;
-        return view('pengurus_masjid.informasi');
-    });
-
-    Route::get('/settings', function () use ($guardMasjid) {
-        if ($redirect = $guardMasjid()) return $redirect;
-        return view('pengurus_masjid.settings');
-    });
-
-});
-
-// --- RUTE SUPERADMIN ---
+// ── SUPERADMIN (R99) ──
 Route::prefix('superadmin')->group(function () {
+    Route::get('/status-cabang',  fn() => session('id_role') == 'R99' ? view('superadmin.status-cabang')  : redirect('/dashboard'));
+    Route::get('/status-ranting', fn() => session('id_role') == 'R99' ? view('superadmin.status-ranting') : redirect('/dashboard'));
+    Route::get('/status-masjid',  fn() => session('id_role') == 'R99' ? view('superadmin.status-masjid')  : redirect('/dashboard'));
+    Route::get('/approval-queue', fn() => session('id_role') == 'R99' ? view('superadmin.approval-queue') : redirect('/dashboard'));
+    Route::get('/persetujuan',    fn() => session('id_role') == 'R99' ? view('superadmin.persetujuan')    : redirect('/dashboard'));
 
-    $guardSA = function () {
-        if (!session('is_logged_in'))
-            return redirect('/login')->withErrors(['loginError' => 'Login dulu']);
-        if (session('id_role') != 'R99')
-            return redirect('/dashboard');
-        return null;
-    };
+    Route::get('/akun-admin',                        [AkunAdminController::class, 'index']);
+    Route::post('/akun-admin',                       [AkunAdminController::class, 'store']);
+    Route::post('/akun-admin/{id}/toggle-status',    [AkunAdminController::class, 'toggleStatus']);
+    Route::post('/akun-admin/{id}/reset-password',   [AkunAdminController::class, 'resetPassword']);
+});
 
-    Route::get('/status-cabang', function () use ($guardSA) {
-        if ($redirect = $guardSA()) return $redirect;
-        return view('superadmin.status-cabang');
-    });
+// ── ADMIN CABANG / PCM (R01) ──
+Route::prefix('pcm')->group(function () {
+    Route::get('/membership',    fn() => session('id_role') == 'R01' ? view('admin_cabang.membership')      : redirect('/dashboard'));
+    Route::get('/sub-branches',  fn() => session('id_role') == 'R01' ? view('admin_cabang.data-masjid')     : redirect('/dashboard'));
+    Route::get('/legal-status',  fn() => session('id_role') == 'R01' ? view('admin_cabang.legalitas-masjid'): redirect('/dashboard'));
+    Route::get('/ranting-status',fn() => session('id_role') == 'R01' ? view('admin_cabang.status-ranting')  : redirect('/dashboard'));
+    Route::get('/settings',      fn() => session('id_role') == 'R01' ? view('admin_cabang.settings')        : redirect('/dashboard'));
 
-    Route::get('/status-ranting', function () use ($guardSA) {
-        if ($redirect = $guardSA()) return $redirect;
-        return view('superadmin.status-ranting');
-    });
+    // Persetujuan dari admin cabang
+    Route::get('/persetujuan',                          [PersetujuanController::class, 'index']);
+    Route::post('/persetujuan/{id}/approve',            [PersetujuanController::class, 'approve']);
+    Route::post('/persetujuan/{id}/reject',             [PersetujuanController::class, 'reject']);
+});
 
-    Route::get('/status-masjid', function () use ($guardSA) {
-        if ($redirect = $guardSA()) return $redirect;
-        return view('superadmin.status-masjid');
-    });
+// ── ADMIN RANTING / PRM (R03) ──
+Route::prefix('prm')->group(function () {
+    Route::get('/membership',    fn() => session('id_role') == 'R03' ? view('admin_ranting.membership')      : redirect('/dashboard'));
+    Route::get('/data-masjid',   fn() => session('id_role') == 'R03' ? view('admin_ranting.data-masjid')     : redirect('/dashboard'));
+    Route::get('/legalitas',     fn() => session('id_role') == 'R03' ? view('admin_ranting.legalitas-masjid'): redirect('/dashboard'));
+    Route::get('/status-ranting',fn() => session('id_role') == 'R03' ? view('admin_ranting.status-ranting')  : redirect('/dashboard'));
+    Route::get('/settings',      fn() => session('id_role') == 'R03' ? view('admin_ranting.settings')        : redirect('/dashboard'));
 
-    Route::get('/approval-queue', function () use ($guardSA) {
-        if ($redirect = $guardSA()) return $redirect;
-        return view('superadmin.approval-queue');
-    });
+    // CRUD Masjid oleh Admin Ranting
+    Route::get('/tambah-masjid',     [MasjidController::class, 'create']);
+    Route::post('/tambah-masjid',    [MasjidController::class, 'store']);
+    Route::get('/edit-masjid/{id}',  [MasjidController::class, 'edit']);
+    Route::put('/edit-masjid/{id}',  [MasjidController::class, 'update']);
+});
 
-    Route::get('/akun-admin', [AkunAdminController::class, 'index']);
-    Route::post('/akun-admin', [AkunAdminController::class, 'store']);
-    Route::post('/akun-admin/{id}/toggle-status', [AkunAdminController::class, 'toggleStatus']);
-    Route::post('/akun-admin/{id}/reset-password', [AkunAdminController::class, 'resetPassword']);
+// ── PENGURUS MASJID (R02) ──
+Route::prefix('masjid')->group(function () {
+    Route::get('/informasi', fn() => session('id_role') == 'R02' ? view('pengurus_masjid.Informasi') : redirect('/dashboard'));
+    Route::get('/settings',  fn() => session('id_role') == 'R02' ? view('pengurus_masjid.Settings')  : redirect('/dashboard'));
 
+    // Inventaris
+    Route::get('/inventaris',           [InventarisController::class, 'index']);
+    Route::post('/inventaris',          [InventarisController::class, 'store']);
+    Route::put('/inventaris/{id}',      [InventarisController::class, 'update']);
+    Route::delete('/inventaris/{id}',   [InventarisController::class, 'destroy']);
+
+    // Takmir
+    Route::get('/takmir',               [TakmirController::class, 'index']);
+    Route::post('/takmir',              [TakmirController::class, 'store']);
+    Route::put('/takmir/{id}',          [TakmirController::class, 'update']);
+    Route::delete('/takmir/{id}',       [TakmirController::class, 'destroy']);
+
+    // Legalitas
+    Route::get('/legalitas',            [LegalitasController::class, 'index']);
+    Route::post('/legalitas',           [LegalitasController::class, 'store']);
+    Route::put('/legalitas/{id}',       [LegalitasController::class, 'update']);
+
+    // Pengajuan
+    Route::get('/pengajuan',            [PengajuanController::class, 'index']);
+    Route::post('/pengajuan',           [PengajuanController::class, 'store']);
 });
