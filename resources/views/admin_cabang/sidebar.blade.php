@@ -87,7 +87,7 @@
 
   <a href="{{ url('/pcm/legal-status') }}"
      class="nav-item {{ ($activeNav ?? '') === 'legal-status' ? 'active' : '' }}">
-    <i class="ti ti-certificate"></i><span>Legalitas Status</span>
+    <i class="ti ti-certificate"></i><span>Manajemen Masjid</span>
   </a>
 
   <div class="nav-spacer"></div>

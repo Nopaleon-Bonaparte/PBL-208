@@ -125,7 +125,7 @@
           $navLabels = [
             'dashboard'      => 'Dashboard',
             'sub-branches'   => 'Data Masjid',
-            'legal-status'   => 'Legalitas Status',
+            'legal-status'   => 'Manajemen Masjid',
             'ranting-status' => 'Status Ranting',
             'financials'     => 'Statistik',
             'settings'       => 'Pengaturan',
