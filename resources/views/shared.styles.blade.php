@@ -255,8 +255,8 @@ tbody tr:hover { background: #f6f8eb; }
 .badge-aktif::before { background: #22c55e; }
 .badge-kurang       { background: #fef3c7; color: #b45309; }
 .badge-kurang::before { background: #f59e0b; }
-.badge-vakum        { background: var(--gray-100); color: var(--gray-600); }
-.badge-vakum::before { background: var(--gray-400); }
+.badge-vakum        { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+.badge-vakum::before { background: #ef4444; }
 .badge-pending      { background: #fef3c7; color: #b45309; }
 .badge-pending::before { background: #f59e0b; }
 .badge-disetujui    { background: #dcfce7; color: #15803d; }

@@ -269,22 +269,19 @@ body { font-family: 'Inter', sans-serif; }
             <div class="kriteria-box-title">
               <span class="dot" style="background:var(--green-500);"></span>AKTIF
             </div>
-            <div class="kriteria-item"><i class="ti ti-circle-check"></i> Laporan ≤ 30 hari terakhir</div>
-            <div class="kriteria-item"><i class="ti ti-circle-check"></i> Proker terealisasi ≥ 60%</div>
+            <div class="kriteria-item"><i class="ti ti-circle-check"></i> Login terakhir ≤ 14 hari</div>
           </div>
           <div class="kriteria-box kb-kurang">
             <div class="kriteria-box-title">
               <span class="dot" style="background:#f59e0b;"></span>KURANG AKTIF
             </div>
-            <div class="kriteria-item"><i class="ti ti-minus-circle"></i> Laporan 31 – 90 hari terakhir</div>
-            <div class="kriteria-item"><i class="ti ti-minus-circle"></i> Proker terealisasi 30 – 60%</div>
+            <div class="kriteria-item"><i class="ti ti-minus-circle"></i> Login terakhir 15 – 45 hari</div>
           </div>
           <div class="kriteria-box kb-vakum">
             <div class="kriteria-box-title">
               <span class="dot" style="background:#ef4444;"></span>INAKTIF / VAKUM
             </div>
-            <div class="kriteria-item"><i class="ti ti-circle-x"></i> Laporan > 90 hari terakhir</div>
-            <div class="kriteria-item"><i class="ti ti-circle-x"></i> Proker terealisasi < 30%</div>
+            <div class="kriteria-item"><i class="ti ti-circle-x"></i> Login terakhir > 45 hari / belum pernah</div>
           </div>
         </div>
       </div>

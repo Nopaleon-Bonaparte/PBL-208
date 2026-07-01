@@ -85,10 +85,7 @@
     <i class="ti ti-certificate"></i><span>Legalitas Status</span>
   </a>
 
-  <a href="{{ url('/prm/status-ranting') }}"
-     class="nav-item {{ ($activeNav ?? '') === 'status-ranting' ? 'active' : '' }}">
-    <i class="ti ti-git-branch"></i><span>Status Ranting</span>
-  </a>
+
 
   <div class="nav-spacer"></div>
 

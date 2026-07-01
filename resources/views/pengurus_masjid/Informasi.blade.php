@@ -158,6 +158,16 @@ body { font-family: 'Inter', sans-serif; }
 .verify-meta { font-size: 12.5px; color: var(--gray-500); }
 .verify-actions { display: flex; align-items: center; gap: 18px; }
 .verify-actions a { font-size: 13px; font-weight: 600; color: var(--green-700); text-decoration: none; }
+.btn-ajukan {
+  display: flex; align-items: center; gap: 6px;
+  background: #fff; color: var(--green-700);
+  border: 1.5px solid var(--green-600);
+  padding: 9px 18px; border-radius: 10px;
+  font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: background .15s;
+}
+.btn-ajukan:hover { background: var(--green-50); }
+
 .btn-print {
   display: flex; align-items: center; gap: 6px;
   background: var(--green-800); color: #fff; padding: 9px 18px; border-radius: 10px;
@@ -429,6 +439,9 @@ body { font-family: 'Inter', sans-serif; }
             @endif
           </div>
           <div class="verify-actions">
+            <button class="btn-ajukan" onclick="openAjukanModal()">
+              <i class="ti ti-edit"></i> Ajukan Perubahan Data
+            </button>
             <button class="btn-print" onclick="window.print()"><i class="ti ti-printer"></i> Cetak Halaman</button>
           </div>
         </div>
@@ -895,6 +908,84 @@ body { font-family: 'Inter', sans-serif; }
   </div>
 </div>
 
+<!-- ── MODAL AJUKAN PERUBAHAN DATA ── -->
+<div class="aa-modal-overlay" id="ajukanModalOverlay" onclick="closeOnBgAjukan(event)">
+  <div class="aa-modal-box" style="max-width:580px;">
+    <div class="aa-modal-header">
+      <h3><i class="ti ti-edit" style="margin-right:6px;color:#1e6b3f;"></i>Ajukan Perubahan Data Masjid</h3>
+      <button class="aa-modal-close" onclick="closeAjukanModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <form method="POST" action="{{ url('/masjid/pengajuan') }}">
+      @csrf
+      <input type="hidden" name="jenis_pengajuan" value="ubah_data">
+      <div class="aa-modal-body">
+        <p style="font-size:12.5px;color:var(--gray-500);margin-bottom:16px;">Isi field yang ingin diubah. Field yang dikosongkan tidak akan diperbarui.</p>
+
+        <div class="aa-form-row-2">
+          <div class="aa-form-group">
+            <label>Nama Resmi Masjid</label>
+            <input type="text" name="nama_masjid" placeholder="{{ $masjid->nama_masjid ?? '' }}" value="{{ $masjid->nama_masjid ?? '' }}">
+          </div>
+          <div class="aa-form-group">
+            <label>Tipe Bangunan</label>
+            <select name="tipe">
+              <option value="Masjid" {{ ($masjid->tipe ?? '') === 'Masjid' ? 'selected' : '' }}>Masjid</option>
+              <option value="Musholla" {{ ($masjid->tipe ?? '') === 'Musholla' ? 'selected' : '' }}>Musholla</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="aa-form-row-2">
+          <div class="aa-form-group">
+            <label>Kecamatan</label>
+            <input type="text" name="kecamatan" placeholder="Kecamatan" value="{{ $masjid->kecamatan ?? '' }}">
+          </div>
+          <div class="aa-form-group">
+            <label>Kelurahan</label>
+            <input type="text" name="kelurahan" placeholder="Kelurahan" value="{{ $masjid->kelurahan ?? '' }}">
+          </div>
+        </div>
+
+        <div class="aa-form-row-2">
+          <div class="aa-form-group">
+            <label>Kapasitas Jamaah</label>
+            <input type="number" name="kapasitas" placeholder="Contoh: 500" value="{{ $masjid->kapasitas ?? '' }}" min="0">
+          </div>
+          <div class="aa-form-group">
+            <label>Status Lahan</label>
+            <select name="status_tanah">
+              <option value="">-- Pilih --</option>
+              <option value="Wakaf" {{ ($masjid->status_tanah ?? '') === 'Wakaf' ? 'selected' : '' }}>Wakaf</option>
+              <option value="Milik Sendiri" {{ ($masjid->status_tanah ?? '') === 'Milik Sendiri' ? 'selected' : '' }}>Milik Sendiri</option>
+              <option value="Sewa" {{ ($masjid->status_tanah ?? '') === 'Sewa' ? 'selected' : '' }}>Sewa</option>
+              <option value="Pinjam Pakai" {{ ($masjid->status_tanah ?? '') === 'Pinjam Pakai' ? 'selected' : '' }}>Pinjam Pakai</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="aa-form-group">
+          <label>Alamat Lengkap</label>
+          <textarea name="alamat" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;outline:none;resize:vertical;">{{ $masjid->alamat ?? '' }}</textarea>
+        </div>
+
+        <div class="aa-form-group">
+          <label>Kontak Pengurus</label>
+          <input type="text" name="kontak_pengurus" placeholder="Contoh: 08123456789" value="{{ $masjid->kontak_pengurus ?? '' }}">
+        </div>
+
+        <div class="aa-form-group">
+          <label>Keterangan / Alasan Perubahan <span class="req">*</span></label>
+          <textarea name="deskripsi" placeholder="Jelaskan alasan pengajuan perubahan data ini..." required rows="3" style="width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;outline:none;resize:vertical;"></textarea>
+        </div>
+      </div>
+      <div class="aa-modal-footer">
+        <button type="button" class="aa-btn-cancel" onclick="closeAjukanModal()">Batal</button>
+        <button type="submit" class="aa-btn-save"><i class="ti ti-send"></i> Kirim Pengajuan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 document.querySelectorAll('.masjid-tab').forEach(function(tab) {
   tab.addEventListener('click', function() {
@@ -971,6 +1062,18 @@ function closeOnBgPengajuan(e) {
   if (e.target === document.getElementById('pengajuanModalOverlay')) closePengajuanModal();
 }
 
+function openAjukanModal() {
+  document.getElementById('ajukanModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAjukanModal() {
+  document.getElementById('ajukanModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeOnBgAjukan(e) {
+  if (e.target === document.getElementById('ajukanModalOverlay')) closeAjukanModal();
+}
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeInventarisModal();
@@ -978,6 +1081,7 @@ document.addEventListener('keydown', e => {
     closeLegalitasModal();
     closeEditLegalitasModal();
     closePengajuanModal();
+    closeAjukanModal();
   }
 });
 </script>
