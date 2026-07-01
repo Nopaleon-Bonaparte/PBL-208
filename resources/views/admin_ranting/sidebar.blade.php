@@ -82,7 +82,7 @@
 
   <a href="{{ url('/prm/legalitas') }}"
      class="nav-item {{ ($activeNav ?? '') === 'legalitas' ? 'active' : '' }}">
-    <i class="ti ti-certificate"></i><span>Legalitas Status</span>
+    <i class="ti ti-certificate"></i><span>Manajemen Masjid</span>
   </a>
 
 
