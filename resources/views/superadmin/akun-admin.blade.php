@@ -100,11 +100,26 @@ body { font-family: 'Inter', sans-serif; }
         </div>
       </div>
 
-      @if(session('success'))
-        <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg font-medium flex items-center gap-2">
-          <i class="ti ti-circle-check"></i> {{ session('success') }}
-        </div>
-      @endif
+    @if(session('success'))
+  <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg font-medium flex items-center gap-2">
+    <i class="ti ti-circle-check"></i> {{ session('success') }}
+  </div>
+@endif
+
+@if(session('notifikasi_privileges'))
+  <div class="mb-4 px-4 py-3 rounded-lg font-medium flex items-center gap-2"
+    style="background: {{ str_contains(session('notifikasi_privileges'), 'DICABUT') ? '#fee2e2' : '#dcfce7' }};
+           border: 1px solid {{ str_contains(session('notifikasi_privileges'), 'DICABUT') ? '#fca5a5' : '#86efac' }};
+           color: {{ str_contains(session('notifikasi_privileges'), 'DICABUT') ? '#dc2626' : '#16a34a' }};">
+    <i class="ti ti-{{ str_contains(session('notifikasi_privileges'), 'DICABUT') ? 'lock' : 'lock-open' }}"></i>
+    <div>
+      <div style="font-weight:700;font-size:13px;">
+        {{ str_contains(session('notifikasi_privileges'), 'DICABUT') ? '🔒 Privileges Dicabut' : '🔓 Privileges Diberikan' }}
+      </div>
+      <div style="font-size:12px;margin-top:2px;">{{ session('notifikasi_privileges') }}</div>
+    </div>
+  </div>
+@endif
 
       {{-- ── STAT CARDS ── --}}
       <div class="aa-stat-grid">

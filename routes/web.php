@@ -21,8 +21,8 @@ Route::get('/', fn() => redirect('/login'));
 Route::get('/login', function () {
     if (session('is_logged_in')) return redirect('/dashboard');
     return view('login');
-})->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+})->name('login')->middleware('login.ip');
+Route::post('/login', [AuthController::class, 'login'])->middleware('login.ip');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ── Dashboard (role-based redirect) ──
