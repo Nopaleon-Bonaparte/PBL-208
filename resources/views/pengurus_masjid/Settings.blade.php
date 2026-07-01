@@ -24,10 +24,10 @@
 <body>
 <div class="app-shell">
 
-  @include('pengurus_masjid.sidebar', ['activeNav' => 'settings'])
+  @include('pengurus_masjid.Sidebar', ['activeNav' => 'settings'])
 
   <div class="main-shell">
-    @include('pengurus_masjid.topbar', ['activeTopLink' => 'settings'])
+    @include('pengurus_masjid.Topbar', ['activeTopLink' => 'settings'])
 
     <main class="page-content">
 

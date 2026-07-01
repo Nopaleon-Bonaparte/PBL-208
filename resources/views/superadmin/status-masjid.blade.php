@@ -3,12 +3,27 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Status Masjid & Musholla — PDM Kota Batam</title>
+<title>Data Masjid — Superadmin</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-@vite('resources/css/app.css')
 @include('shared.styles')
-<style>body { font-family: 'Inter', sans-serif; }</style>
+<style>
+body { font-family:'Inter',sans-serif; }
+.m-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
+.m-card { background:#fff; border:1px solid var(--gray-200); border-radius:12px; padding:18px;
+  box-shadow:0 1px 3px rgba(0,0,0,.05); }
+.m-top { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.m-icon { width:40px; height:40px; border-radius:10px; background:#1e6b3f; color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.m-name { font-size:15px; font-weight:700; color:var(--gray-900); line-height:1.3; }
+.m-sub { font-size:12px; color:var(--gray-500); }
+.m-row { font-size:12.5px; color:var(--gray-600); margin-top:6px; display:flex; gap:6px; align-items:center; }
+.m-row i { color:var(--gray-400); }
+.m-cabang { font-size:11px; font-weight:700; color:#1e6b3f; background:#dcfce7;
+  padding:3px 9px; border-radius:999px; }
+.empty { text-align:center; color:var(--gray-400); padding:60px 0; }
+.empty i { font-size:42px; display:block; margin-bottom:10px; }
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -20,76 +35,38 @@
 
     <main class="page-content">
 
-      <div class="flex justify-between items-end mb-6">
-        <div>
-          <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Data Masjid & Musholla</h2>
-          <p class="text-gray-500 font-medium mt-1">Inventaris dan status lahan amal usaha tempat ibadah</p>
-        </div>
-        <div class="flex gap-3">
-          <div class="relative">
-            <input type="text" placeholder="Cari masjid/musholla..." class="pl-4 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-64 text-sm">
-          </div>
+      <div class="page-header" style="margin-bottom:20px;">
+        <div class="page-header-left">
+          <h1>Data Masjid (Seluruh Cabang)</h1>
+          <p>Data yang sudah jadi dan dikelola dari seluruh cabang. Tampilan hanya untuk pemantauan.</p>
         </div>
       </div>
 
-      @if(session('success'))
-        <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg font-medium flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          {{ session('success') }}
-        </div>
-      @endif
+      <div class="dm-notice" style="margin-bottom:20px;">
+        <i class="ti ti-eye"></i>
+        Superadmin hanya dapat melihat data. Pengelolaan dilakukan oleh admin cabang & ranting.
+      </div>
 
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="w-full text-left">
-          <thead class="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Tempat Ibadah</th>
-              <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</th>
-              <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Pengelola</th>
-              <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Status Lahan</th>
-              <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-
-            <tr class="hover:bg-gray-50 transition">
-              <td class="p-4 text-sm font-bold text-gray-900">Masjid Raya Al-Falah</td>
-              <td class="p-4 text-sm text-gray-600">Masjid</td>
-              <td class="p-4 text-sm text-gray-600">PCM Nongsa</td>
-              <td class="p-4 text-center">
-                <span class="bg-green-100 text-green-800 border border-green-200 text-xs px-2.5 py-1 rounded-md font-bold uppercase tracking-wide">Wakaf Sertifikat</span>
-              </td>
-              <td class="p-4 text-center">
-                <button class="text-green-700 font-semibold text-sm hover:underline">Detail</button>
-              </td>
-            </tr>
-
-            <tr class="hover:bg-gray-50 transition">
-              <td class="p-4 text-sm font-bold text-gray-900">Musholla At-Taqwa</td>
-              <td class="p-4 text-sm text-gray-600">Musholla</td>
-              <td class="p-4 text-sm text-gray-600">PRM Kibing</td>
-              <td class="p-4 text-center">
-                <span class="bg-yellow-100 text-yellow-800 border border-yellow-200 text-xs px-2.5 py-1 rounded-md font-bold uppercase tracking-wide">Proses Wakaf</span>
-              </td>
-              <td class="p-4 text-center">
-                <button class="text-green-700 font-semibold text-sm hover:underline">Detail</button>
-              </td>
-            </tr>
-
-            <tr class="hover:bg-gray-50 transition">
-              <td class="p-4 text-sm font-bold text-gray-900">Masjid Baitul Makmur</td>
-              <td class="p-4 text-sm text-gray-600">Masjid</td>
-              <td class="p-4 text-sm text-gray-600">PCM Batu Aji</td>
-              <td class="p-4 text-center">
-                <span class="bg-blue-100 text-blue-800 border border-blue-200 text-xs px-2.5 py-1 rounded-md font-bold uppercase tracking-wide">Hak Pakai</span>
-              </td>
-              <td class="p-4 text-center">
-                <button class="text-green-700 font-semibold text-sm hover:underline">Detail</button>
-              </td>
-            </tr>
-
-          </tbody>
-        </table>
+      <div class="m-grid">
+        @forelse($masjid as $m)
+          <div class="m-card">
+            <div class="m-top">
+              <div class="m-icon"><i class="ti ti-building-mosque"></i></div>
+              <div style="flex:1;">
+                <div class="m-name">{{ $m->nama_masjid }}</div>
+                <div class="m-sub">{{ $m->tipe ?? 'Masjid' }} · {{ $m->nama_ranting ?? '-' }}</div>
+              </div>
+            </div>
+            <div class="m-row"><span class="m-cabang">{{ $m->nama_cabang ?? '-' }}</span></div>
+            <div class="m-row"><i class="ti ti-map-pin"></i> {{ $m->alamat ?? '-' }}</div>
+            <div class="m-row"><i class="ti ti-certificate"></i> Legalitas: {{ $m->status_legalitas ?? '-' }}</div>
+          </div>
+        @empty
+          <div class="empty" style="grid-column:1/-1;">
+            <i class="ti ti-building-mosque"></i>
+            Belum ada data masjid yang disetujui.
+          </div>
+        @endforelse
       </div>
 
     </main>

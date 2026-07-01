@@ -8,6 +8,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 @include('shared.styles')
 <style>
+
+/* ── CARD PRESS EFFECT ── */
+.masjid-card {
+  cursor: pointer;
+  overflow: visible !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+  will-change: transform;
+}
+.masjid-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(30,107,63,.18) !important;
+  border-color: var(--green-400) !important;
+  background: #fff !important;
+}
+.masjid-card.shaking {
+  animation: card-shake 0.35s ease !important;
+  background: #d6f0e0 !important;
+  border-color: var(--green-500) !important;
+  box-shadow: 0 4px 14px rgba(30,107,63,.22) !important;
+}
+@keyframes card-shake {
+  0%   { transform: rotate(0deg) scale(1); }
+  20%  { transform: rotate(-2deg) scale(0.97); }
+  40%  { transform: rotate(2deg) scale(0.97); }
+  60%  { transform: rotate(-1.2deg) scale(0.99); }
+  80%  { transform: rotate(1deg) scale(0.99); }
+  100% { transform: rotate(0deg) scale(1); }
+}
 /* Override font */
 body { font-family: 'Inter', sans-serif !important; }
 
@@ -54,6 +83,14 @@ body { font-family: 'Inter', sans-serif !important; }
   margin-bottom: 16px;
 }
 .dm-section-title i { font-size: 17px; color: var(--green-600); }
+.dm-subgroup-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--green-700);
+  margin-bottom: 10px;
+}
 
 /* ── FORM ELEMENTS ── */
 .dm-group { margin-bottom: 14px; }
@@ -220,21 +257,42 @@ body { font-family: 'Inter', sans-serif !important; }
 
     <main class="page-content">
 
+      @php
+        $isEdit = ($mode ?? 'create') === 'edit';
+        $m = $masjid ?? null;
+        // checkbox alat kebersihan tersimpan sebagai CSV
+        $alat = $m && !empty($m->alat_kebersihan) ? explode(',', $m->alat_kebersihan) : [];
+      @endphp
+
+      @if($errors->any())
+        <div class="dm-notice" style="background:#fee2e2;border-color:#fca5a5;color:#b91c1c;">
+          <i class="ti ti-alert-circle"></i>
+          <div>@foreach($errors->all() as $e){{ $e }}<br>@endforeach</div>
+        </div>
+      @endif
+      @if(session('success'))
+        <div class="dm-notice" style="background:#dcfce7;border-color:#86efac;color:#15803d;">
+          <i class="ti ti-circle-check"></i> {{ session('success') }}
+        </div>
+      @endif
+
       <!-- NOTICE -->
       <div class="dm-notice">
         <i class="ti ti-alert-triangle"></i>
-        Pastikan seluruh data legalitas dan wakaf telah diverifikasi sesuai dengan dokumen fisik sebelum dikirim ke Superadmin.
+        Pastikan seluruh data legalitas dan wakaf telah diverifikasi sesuai dengan dokumen fisik sebelum diajukan ke admin cabang.
       </div>
 
       <!-- PAGE HEADER -->
       <div class="page-header" style="margin-bottom:20px;">
         <div class="page-header-left">
           <h1>Tambah Masjid / Musholla Baru</h1>
-          <p>Pendaftaran entitas rumah ibadah baru ke dalam sistem PRM Admin.</p>
+          <p>Pendaftaran masjid/musholla baru. Data diajukan ke admin cabang untuk disetujui.</p>
         </div>
       </div>
 
-      <form>
+      <form method="POST" action="{{ $isEdit ? url(($mode_base ?? '/prm').'/edit-masjid/'.$m->id_masjid) : url('/prm/tambah-masjid') }}">
+        @csrf
+        @if($isEdit) @method('PUT') @endif
       <div class="dm-layout">
 
         <!-- LEFT COL -->
@@ -248,58 +306,53 @@ body { font-family: 'Inter', sans-serif !important; }
 
             <div class="dm-group">
               <label class="dm-label">Nama Masjid/Musholla</label>
-              <input class="dm-input" type="text" placeholder="Masukkan nama resmi"/>
+              <input class="dm-input" type="text" name="nama_masjid" required value="{{ old('nama_masjid', $m->nama_masjid ?? '') }}" placeholder="Masukkan nama resmi"/>
             </div>
 
             <div class="dm-group">
               <label class="dm-label">Tipe Bangunan</label>
               <div class="dm-radio-group">
-                <label class="dm-radio-label"><input type="radio" name="tipe" checked/> Masjid</label>
-                <label class="dm-radio-label"><input type="radio" name="tipe"/> Musholla</label>
+                <label class="dm-radio-label"><input type="radio" name="tipe" value="Masjid" {{ old('tipe', $m->tipe ?? 'Masjid') === 'Masjid' ? 'checked' : '' }}/> Masjid</label>
+                <label class="dm-radio-label"><input type="radio" name="tipe" value="Musholla" {{ old('tipe', $m->tipe ?? '') === 'Musholla' ? 'checked' : '' }}/> Musholla</label>
               </div>
             </div>
 
             <div class="dm-group">
               <label class="dm-label">Alamat Lengkap</label>
-              <textarea class="dm-textarea" placeholder="Masukkan alamat lengkap"></textarea>
+              <textarea class="dm-textarea" name="alamat" placeholder="Masukkan alamat lengkap">{{ old('alamat', $m->alamat ?? '') }}</textarea>
             </div>
 
             <div class="dm-grid-2">
               <div class="dm-group">
                 <label class="dm-label">Kecamatan</label>
-                <select class="dm-select">
+                @php $kec = old('kecamatan', $m->kecamatan ?? ''); @endphp
+                <select class="dm-select" name="kecamatan">
                   <option value="">Pilih Kecamatan</option>
-                  <option>Batam Kota</option>
-                  <option>Sekupang</option>
-                  <option>Nongsa</option>
-                  <option>Batu Aji</option>
-                  <option>Lubuk Baja</option>
-                  <option>Sagulung</option>
-                  <option>Galang</option>
-                  <option>Belakang Padang</option>
+                  @foreach(['Batam Kota','Sekupang','Nongsa','Batu Aji','Lubuk Baja','Sagulung','Galang','Belakang Padang'] as $opt)
+                    <option value="{{ $opt }}" {{ $kec === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                  @endforeach
                 </select>
               </div>
               <div class="dm-group">
                 <label class="dm-label">Kelurahan/Desa</label>
-                <select class="dm-select">
+                @php $kel = old('kelurahan', $m->kelurahan ?? ''); @endphp
+                <select class="dm-select" name="kelurahan">
                   <option value="">Pilih Kelurahan</option>
-                  <option>Belian</option>
-                  <option>Teluk Tering</option>
-                  <option>Sukajadi</option>
-                  <option>Sungai Panas</option>
-                  <option>Baloi Permai</option>
+                  @foreach(['Belian','Teluk Tering','Sukajadi','Sungai Panas','Baloi Permai'] as $opt)
+                    <option value="{{ $opt }}" {{ $kel === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                  @endforeach
                 </select>
               </div>
             </div>
 
             <div class="dm-group">
               <label class="dm-label">Kapasitas Jamaah</label>
-              <input class="dm-input" type="number" value="0" style="max-width:180px;"/>
+              <input class="dm-input" type="number" name="kapasitas" value="{{ old('kapasitas', $m->kapasitas ?? 0) }}" style="max-width:180px;"/>
             </div>
 
             <div class="dm-group">
               <label class="dm-label">Nomor SK Pendirian</label>
-              <input class="dm-input" type="text" placeholder="Contoh: 123/SK/PCM/2023"/>
+              <input class="dm-input" type="text" name="no_sk" value="{{ old('no_sk', $m->no_sk ?? '') }}" placeholder="Contoh: 123/SK/PCM/2023"/>
             </div>
           </div>
 
@@ -312,32 +365,32 @@ body { font-family: 'Inter', sans-serif !important; }
             <div class="dm-grid-2">
               <div class="dm-group">
                 <label class="dm-label">Status Tanah</label>
-                <select class="dm-select">
-                  <option>Tanah Wakaf</option>
-                  <option>Hak Milik</option>
-                  <option>Sewa</option>
-                  <option>Pinjam Pakai</option>
+                @php $st = old('status_tanah', $m->status_tanah ?? ''); @endphp
+                <select class="dm-select" name="status_tanah">
+                  @foreach(['Tanah Wakaf','Hak Milik','Sewa','Pinjam Pakai'] as $opt)
+                    <option value="{{ $opt }}" {{ $st === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                  @endforeach
                 </select>
               </div>
               <div class="dm-group">
                 <label class="dm-label">Jenis Sertifikat</label>
-                <select class="dm-select">
-                  <option>AIW (Akta Ikrar Wakaf)</option>
-                  <option>SHM</option>
-                  <option>SHGB</option>
-                  <option>Belum Bersertifikat</option>
+                @php $js = old('jenis_sertifikat', $m->jenis_sertifikat ?? ''); @endphp
+                <select class="dm-select" name="jenis_sertifikat">
+                  @foreach(['AIW (Akta Ikrar Wakaf)','SHM','SHGB','Belum Bersertifikat'] as $opt)
+                    <option value="{{ $opt }}" {{ $js === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                  @endforeach
                 </select>
               </div>
             </div>
 
             <div class="dm-group">
               <label class="dm-label">Nomor Sertifikat/AIW</label>
-              <input class="dm-input" type="text" placeholder="Masukkan nomor sertifikat"/>
+              <input class="dm-input" type="text" name="no_sertifikat" value="{{ old('no_sertifikat', $m->no_sertifikat ?? '') }}" placeholder="Masukkan nomor sertifikat"/>
             </div>
 
             <div class="dm-group">
               <label class="dm-label">Nama Nazir (Penerima Wakaf)</label>
-              <input class="dm-input" type="text" placeholder="Nama lengkap nazir"/>
+              <input class="dm-input" type="text" name="nama_nazir" value="{{ old('nama_nazir', $m->nama_nazir ?? '') }}" placeholder="Nama lengkap nazir"/>
             </div>
           </div>
 
@@ -347,34 +400,36 @@ body { font-family: 'Inter', sans-serif !important; }
               <i class="ti ti-tool"></i> Data Inventaris &amp; Fasilitas
             </div>
 
+            <div class="dm-subgroup-title">Unit</div>
             <div class="dm-grid-2">
               <div class="dm-group">
                 <label class="dm-label">Sound System</label>
-                <select class="dm-select">
+                @php $ss = old('sound_system', $m->sound_system ?? ''); @endphp
+                <select class="dm-select" name="sound_system">
                   <option value="">Pilih Kondisi</option>
-                  <option>Baik</option>
-                  <option>Perlu Perbaikan</option>
-                  <option>Tidak Ada</option>
+                  @foreach(['Baik','Perlu Perbaikan','Tidak Ada'] as $opt)
+                    <option value="{{ $opt }}" {{ $ss === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                  @endforeach
                 </select>
               </div>
               <div class="dm-group">
                 <label class="dm-label">Pendingin Ruangan (AC)</label>
-                <input class="dm-input" type="number" placeholder="Jumlah unit"/>
+                <input class="dm-input" type="number" name="jumlah_ac" value="{{ old('jumlah_ac', $m->jumlah_ac ?? '') }}" placeholder="Jumlah unit"/>
               </div>
             </div>
 
             <div class="dm-group">
               <label class="dm-label">Alat Kebersihan</label>
               <div class="dm-check-row">
-                <label class="dm-check-label"><input type="checkbox"/> Vacuum Cleaner</label>
-                <label class="dm-check-label"><input type="checkbox"/> Mesin Poles</label>
-                <label class="dm-check-label"><input type="checkbox"/> Set Sapu &amp; Pel</label>
+                <label class="dm-check-label"><input type="checkbox" name="alat_kebersihan[]" value="Vacuum Cleaner" {{ in_array('Vacuum Cleaner', $alat) ? 'checked' : '' }}/> Vacuum Cleaner</label>
+                <label class="dm-check-label"><input type="checkbox" name="alat_kebersihan[]" value="Mesin Poles" {{ in_array('Mesin Poles', $alat) ? 'checked' : '' }}/> Mesin Poles</label>
+                <label class="dm-check-label"><input type="checkbox" name="alat_kebersihan[]" value="Set Sapu & Pel" {{ in_array('Set Sapu & Pel', $alat) ? 'checked' : '' }}/> Set Sapu &amp; Pel</label>
               </div>
             </div>
 
             <div class="dm-group">
               <label class="dm-label">Sarana Lainnya</label>
-              <textarea class="dm-textarea" placeholder="Contoh: Karpet, Genset, CCTV, dll." style="min-height:60px;"></textarea>
+              <textarea class="dm-textarea" name="sarana_lainnya" placeholder="Contoh: Karpet, Genset, CCTV, dll." style="min-height:60px;">{{ old('sarana_lainnya', $m->sarana_lainnya ?? '') }}</textarea>
             </div>
           </div>
 
@@ -423,16 +478,16 @@ body { font-family: 'Inter', sans-serif !important; }
             </div>
             <div class="dm-group">
               <label class="dm-label">Nama Ketua Takmir</label>
-              <input class="dm-input" type="text" placeholder="Nama lengkap"/>
+              <input class="dm-input" type="text" name="takmir_nama" value="{{ old('takmir_nama', $m->takmir_nama ?? '') }}" placeholder="Nama lengkap"/>
             </div>
             <div class="dm-grid-2">
               <div class="dm-group">
                 <label class="dm-label">NIK</label>
-                <input class="dm-input" type="text" placeholder="16 digit"/>
+                <input class="dm-input" type="text" name="takmir_nik" value="{{ old('takmir_nik', $m->takmir_nik ?? '') }}" placeholder="16 digit"/>
               </div>
               <div class="dm-group">
                 <label class="dm-label">Nomor WhatsApp</label>
-                <input class="dm-input" type="text" placeholder="08xx"/>
+                <input class="dm-input" type="text" name="takmir_wa" value="{{ old('takmir_wa', $m->takmir_wa ?? $m->kontak_pengurus ?? '') }}" placeholder="08xx"/>
               </div>
             </div>
           </div>
@@ -467,7 +522,7 @@ body { font-family: 'Inter', sans-serif !important; }
         <div class="dm-bottom-bar-right">
           <button type="button" class="btn btn-secondary">Simpan Draft</button>
           <button type="submit" class="btn btn-primary">
-            Kirim ke Superadmin <i class="ti ti-send" style="font-size:14px;"></i>
+            Ajukan ke Admin Cabang <i class="ti ti-send" style="font-size:14px;"></i>
           </button>
         </div>
       </div>
@@ -477,5 +532,13 @@ body { font-family: 'Inter', sans-serif !important; }
     </main>
   </div>
 </div>
+<script>
+document.querySelectorAll('.masjid-card').forEach(card => {
+  card.addEventListener('mousedown', function() {
+    this.classList.add('shaking');
+    setTimeout(() => this.classList.remove('shaking'), 350);
+  });
+});
+</script>
 </body>
 </html>

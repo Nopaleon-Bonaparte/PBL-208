@@ -10,6 +10,27 @@
 <style>
 body { font-family: 'Inter', sans-serif; }
 
+/* ── MODALS & FORMS ── */
+.aa-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
+.aa-modal-overlay.open { display:flex; }
+.aa-modal-box { background:#fff; border-radius:16px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+.aa-modal-header { display:flex; align-items:center; justify-content:space-between; padding:20px 24px 16px; border-bottom:1px solid #f3f4f6; }
+.aa-modal-header h3 { font-size:16px; font-weight:700; color:#111827; }
+.aa-modal-close { width:32px; height:32px; border:none; background:#f3f4f6; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#4b5563; }
+.aa-modal-body { padding:20px 24px; }
+.aa-form-group { margin-bottom:16px; }
+.aa-form-group label { display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:5px; text-transform:uppercase; letter-spacing:.03em; }
+.aa-form-group input, .aa-form-group select, .aa-form-group textarea {
+  width:100%; padding:9px 12px; border:1.5px solid #d1d5db; border-radius:8px;
+  font-size:13px; color:#1f2937; font-family:inherit; background:#fff; outline:none;
+}
+.aa-form-group input:focus, .aa-form-group select:focus, .aa-form-group textarea:focus { border-color:#1e6b3f; box-shadow:0 0 0 3px rgba(30,107,63,.1); }
+.aa-form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.aa-modal-footer { display:flex; justify-content:flex-end; gap:10px; padding:16px 24px; border-top:1px solid #f3f4f6; }
+.aa-btn-cancel { padding:9px 18px; border:1.5px solid #d1d5db; border-radius:8px; font-size:13px; font-weight:600; color:#374151; background:#fff; cursor:pointer; font-family:inherit; }
+.aa-btn-save { padding:9px 22px; background:#1e6b3f; color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; }
+.req { color:#dc2626; }
+
 /* ── HERO HEADER ── */
 .masjid-hero {
   background: linear-gradient(135deg, #1a4d33 0%, #0f3322 100%);
@@ -285,10 +306,10 @@ body { font-family: 'Inter', sans-serif; }
 <body>
 <div class="app-shell">
 
-  @include('pengurus_masjid.sidebar', ['activeNav' => 'informasi'])
+  @include('pengurus_masjid.Sidebar', ['activeNav' => 'informasi'])
 
   <div class="main-shell">
-    @include('pengurus_masjid.topbar', ['activeTopLink' => 'informasi'])
+    @include('pengurus_masjid.Topbar', ['activeTopLink' => 'informasi'])
 
     <main class="page-content">
 
@@ -296,17 +317,17 @@ body { font-family: 'Inter', sans-serif; }
       <div class="masjid-hero">
         <div>
           <div class="hero-badges">
-            <span class="hero-badge hb-masjid">Masjid</span>
-            <span class="hero-badge hb-wakaf">Wakaf</span>
-            <span class="hero-badge hb-pbb">PBB: 12.34.56.78</span>
+            <span class="hero-badge hb-masjid">{{ $masjid->tipe ?? 'Masjid' }}</span>
+            <span class="hero-badge hb-wakaf">{{ $masjid->status_legalitas ?? 'Proses' }}</span>
+            <span class="hero-badge hb-pbb">SK: {{ $masjid->no_sk ?? '-' }}</span>
           </div>
-          <div class="hero-title">Masjid Agung Batam</div>
-          <div class="hero-loc"><i class="ti ti-map-pin"></i> Jl. Engku Putri, Kel. Belian, Kec. Batam Kota, Kota Batam, Kepulauan Riau</div>
+          <div class="hero-title">{{ $masjid->nama_masjid ?? 'Nama Masjid' }}</div>
+          <div class="hero-loc"><i class="ti ti-map-pin"></i> {{ $masjid->alamat ?? 'Alamat belum diisi' }}</div>
         </div>
         <div class="hero-stats">
-          <div class="hero-stat"><div class="hero-stat-label">Kapasitas</div><div class="hero-stat-val">2.500</div></div>
-          <div class="hero-stat"><div class="hero-stat-label">Takmir</div><div class="hero-stat-val">25</div></div>
-          <div class="hero-stat"><div class="hero-stat-label">Inventaris</div><div class="hero-stat-val">142</div></div>
+          <div class="hero-stat"><div class="hero-stat-label">Kapasitas</div><div class="hero-stat-val">{{ number_format($masjid->kapasitas ?? 0) }}</div></div>
+          <div class="hero-stat"><div class="hero-stat-label">Takmir</div><div class="hero-stat-val">{{ count($takmir) }}</div></div>
+          <div class="hero-stat"><div class="hero-stat-label">Inventaris</div><div class="hero-stat-val">{{ count($inventaris) }}</div></div>
         </div>
       </div>
 
@@ -319,244 +340,216 @@ body { font-family: 'Inter', sans-serif; }
         <button class="masjid-tab" data-tab="pengajuan">Pengajuan</button>
       </div>
 
+      @if(session('success'))
+        <div style="background:#dcfce7;color:#15803d;border:1px solid #86efac;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;">
+          <i class="ti ti-circle-check" style="margin-right:6px;vertical-align:middle;"></i>{{ session('success') }}
+        </div>
+      @endif
+      @if($errors->any())
+        <div style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;">
+          <i class="ti ti-alert-circle" style="margin-right:6px;vertical-align:middle;"></i>
+          @foreach($errors->all() as $error)
+            {{ $error }}<br>
+          @endforeach
+        </div>
+      @endif
+
       {{-- ════════════════ TAB: INFORMASI ════════════════ --}}
       <div class="tab-panel active" id="panel-informasi">
         <div class="info-grid">
-
           <div>
             <div class="info-card">
               <h3>Data Umum <i class="ti ti-info-circle" style="color:var(--gray-300);font-size:16px;"></i></h3>
               <div class="info-row-2">
-                <div class="info-field"><label>Nama Resmi</label><div class="val">Masjid Agung Batam</div></div>
-                <div class="info-field"><label>Tahun Berdiri</label><div class="val">2001</div></div>
+                <div class="info-field"><label>Nama Resmi</label><div class="val">{{ $masjid->nama_masjid ?? '-' }}</div></div>
+                <div class="info-field"><label>Tipe Bangunan</label><div class="val">{{ $masjid->tipe ?? '-' }}</div></div>
               </div>
               <div class="info-row-2">
-                <div class="info-field"><label>ID Nasional</label><div class="val">MSJ-BTM-0001</div></div>
-                <div class="info-field"><label>Status Tanah</label><div class="val">Sertifikat Hak Milik (Wakaf)</div></div>
+                <div class="info-field"><label>Kecamatan</label><div class="val">{{ $masjid->kecamatan ?? '-' }}</div></div>
+                <div class="info-field"><label>Kelurahan</label><div class="val">{{ $masjid->kelurahan ?? '-' }}</div></div>
+              </div>
+              <div class="info-row-2">
+                <div class="info-field"><label>Kapasitas Jamaah</label><div class="val">{{ number_format($masjid->kapasitas ?? 0) }}</div></div>
+                <div class="info-field"><label>Status Lahan</label><div class="val">{{ $masjid->status_tanah ?? '-' }}</div></div>
               </div>
               <div class="info-field">
                 <label>Alamat Lengkap</label>
-                <div class="val sm">Jl. Engku Putri No. 1, Kel. Belian, Kec. Batam Kota, Kota Batam, Kepulauan Riau 29444</div>
+                <div class="val sm">{{ $masjid->alamat ?? 'Belum diisi' }}</div>
               </div>
             </div>
 
             <div class="info-card">
-              <h3>Lokasi Strategis <span style="font-size:11.5px;color:var(--gray-400);font-weight:500;">Lat: 1.1102, Long: 104.0529</span></h3>
+              <h3>Lokasi / Wilayah</h3>
               <div class="map-placeholder">
                 <div class="map-pin"><i class="ti ti-map-pin-filled"></i></div>
-                <span>Koordinat Terverifikasi</span>
+                <span>{{ $masjid->wilayah ?? 'Kota Batam' }}</span>
               </div>
             </div>
           </div>
 
           <div>
             <div class="info-card">
-              <h3>Foto Galeri</h3>
-              <div class="gallery-main"><span class="gtag">Tampak Depan (Utama)</span></div>
-              <div class="gallery-grid">
-                <div class="gallery-thumb">Interior</div>
-                <div class="gallery-thumb">Aerial View</div>
+              <h3>Kontak & Akun</h3>
+              <div class="info-field" style="margin-bottom:12px;">
+                <label>Kontak Pengurus</label>
+                <div class="val">{{ $masjid->kontak_pengurus ?? '-' }}</div>
               </div>
-              <div class="gallery-grid" style="margin-top:8px;">
-                <div class="gallery-thumb">Halaman</div>
-                <div class="gallery-thumb more"><i class="ti ti-camera-plus"></i> +9 Lainnya</div>
+              <div class="info-field" style="margin-bottom:12px;">
+                <label>Ranting (PRM)</label>
+                <div class="val">{{ $masjid->nama_ranting ?? '-' }}</div>
+              </div>
+              <div class="info-field">
+                <label>Cabang Induk (PCM)</label>
+                <div class="val">{{ $masjid->nama_cabang ?? '-' }}</div>
               </div>
             </div>
 
             <div class="info-card">
-              <h3>Kelengkapan Data</h3>
-
-              <div class="completeness-row">
-                <div class="cr-top"><span>Dokumen Legalitas</span><span style="color:var(--green-700);">100%</span></div>
-                <div class="cr-bar"><div class="cr-fill" style="width:100%;background:var(--green-600);"></div></div>
+              <h3>Informasi Akun Default</h3>
+              <div class="info-field" style="margin-bottom:10px;">
+                <label>Username</label>
+                <div class="val" style="font-family:monospace;color:#1e6b3f;">{{ $masjid->default_username ?? '-' }}</div>
               </div>
-              <div class="completeness-row">
-                <div class="cr-top"><span>Profil & Kontak</span><span style="color:var(--green-700);">90%</span></div>
-                <div class="cr-bar"><div class="cr-fill" style="width:90%;background:var(--green-600);"></div></div>
+              <div class="info-field">
+                <label>Password Default</label>
+                <div class="val" style="font-family:monospace;color:#1e6b3f;">{{ $masjid->default_password ?? '-' }}</div>
               </div>
-              <div class="completeness-row">
-                <div class="cr-top"><span>Struktur Takmir</span><span style="color:#b45309;">75%</span></div>
-                <div class="cr-bar"><div class="cr-fill" style="width:75%;background:#d97706;"></div></div>
-              </div>
-              <div class="completeness-row">
-                <div class="cr-top"><span>Inventaris Aset</span><span style="color:#dc2626;">45%</span></div>
-                <div class="cr-bar"><div class="cr-fill" style="width:45%;background:#ef4444;"></div></div>
-              </div>
-
-              <button class="btn-complete">Lengkapi Data Sekarang</button>
             </div>
           </div>
-
         </div>
 
         <div class="verify-footer">
           <div class="verify-left">
-            <span class="verify-badge"><i class="ti ti-shield-check"></i> TERVERIFIKASI PCM</span>
-            <span class="verify-meta">Terakhir diperbarui: 12 Jun 2026 oleh Admin Cabang</span>
+            @if(($masjid->status_data ?? '') === 'approved')
+              <span class="verify-badge"><i class="ti ti-shield-check"></i> TERVERIFIKASI PCM</span>
+              <span class="verify-meta">Status Data: Aktif/Terverifikasi</span>
+            @else
+              <span class="verify-badge" style="background:#fff7ed;color:#c2410c;"><i class="ti ti-clock"></i> PROSES VERIFIKASI</span>
+              <span class="verify-meta">Menunggu persetujuan Admin Cabang</span>
+            @endif
           </div>
           <div class="verify-actions">
-            <a href="#"><i class="ti ti-download" style="margin-right:4px;"></i>Unduh Profil PDF</a>
-            <button class="btn-print"><i class="ti ti-printer"></i> Cetak Barcode Wakaf</button>
+            <button class="btn-print" onclick="window.print()"><i class="ti ti-printer"></i> Cetak Halaman</button>
           </div>
         </div>
       </div>
 
       {{-- ════════════════ TAB: INVENTARIS ════════════════ --}}
       <div class="tab-panel" id="panel-inventaris">
-
         <div class="inv-header">
-          <h2>Masjid Agung Batam — Inventaris</h2>
-          <button class="btn-download"><i class="ti ti-download"></i> Unduh Laporan Inventaris</button>
+          <h2>{{ $masjid->nama_masjid }} — Inventaris</h2>
+          <button class="btn-download" onclick="openInventarisModal()"><i class="ti ti-plus"></i> Tambah Inventaris</button>
         </div>
 
         <div class="inv-stats">
           <div class="inv-stat-card">
             <div class="inv-stat-icon isi-gray"><i class="ti ti-clipboard-list"></i></div>
             <div class="inv-stat-label">Total Aset</div>
-            <div class="inv-stat-val">142</div>
+            <div class="inv-stat-val">{{ count($inventaris) }}</div>
           </div>
           <div class="inv-stat-card">
             <div class="inv-stat-icon isi-green"><i class="ti ti-circle-check"></i></div>
             <div class="inv-stat-label">Kondisi Baik</div>
-            <div class="inv-stat-val">119</div>
+            <div class="inv-stat-val">{{ $inventaris->where('kondisi', 'baik')->count() }}</div>
           </div>
           <div class="inv-stat-card">
             <div class="inv-stat-icon isi-amber"><i class="ti ti-tool"></i></div>
-            <div class="inv-stat-label">Perlu Perbaikan</div>
-            <div class="inv-stat-val">17</div>
+            <div class="inv-stat-label">Rusak Ringan</div>
+            <div class="inv-stat-val">{{ $inventaris->where('kondisi', 'rusak ringan')->count() }}</div>
           </div>
           <div class="inv-stat-card">
-            <div class="inv-stat-icon isi-yellow"><i class="ti ti-coin"></i></div>
-            <div class="inv-stat-label">Nilai Aset</div>
-            <div class="inv-stat-val">Rp 560jt</div>
+            <div class="inv-stat-icon isi-yellow"><i class="ti ti-alert-circle"></i></div>
+            <div class="inv-stat-label">Rusak Berat</div>
+            <div class="inv-stat-val">{{ $inventaris->where('kondisi', 'rusak berat')->count() }}</div>
           </div>
         </div>
 
         <div class="inv-table-card">
           <div class="inv-table-head">
             <h3>Daftar Inventaris</h3>
-            <div style="display:flex;align-items:center;">
-              <div class="inv-search"><i class="ti ti-search"></i><input type="text" placeholder="Cari aset..."/></div>
-              <button class="inv-filter-btn"><i class="ti ti-filter"></i></button>
-            </div>
           </div>
           <table class="inv-table">
             <thead>
-              <tr><th>Nama Aset</th><th>Kategori</th><th>Kondisi</th><th>Tahun Perolehan</th><th>Aksi</th></tr>
+              <tr><th>Nama Aset</th><th>Kategori</th><th>Kondisi</th><th>Tanggal Pengadaan</th><th>Aksi</th></tr>
             </thead>
             <tbody>
+              @forelse($inventaris as $item)
               <tr>
-                <td>Sound System Toa ZA-2150</td>
-                <td><span class="cat-pill cat-sound">Sound System</span></td>
-                <td><span class="kondisi-dot kd-baik"></span>Baik</td>
-                <td>2022</td>
-                <td><span class="inv-action-icon ia-edit"><i class="ti ti-pencil"></i></span><span class="inv-action-icon ia-delete"><i class="ti ti-trash"></i></span></td>
+                <td>{{ $item->nama_barang }}</td>
+                <td><span class="cat-pill cat-sarana">Aset</span></td>
+                <td>
+                  @php
+                    $dotColor = match($item->kondisi) {
+                      'baik' => 'kd-baik',
+                      'rusak ringan' => 'kd-perbaikan',
+                      'rusak berat' => 'kd-rusak',
+                      default => 'kd-baik'
+                    };
+                  @endphp
+                  <span class="kondisi-dot {{ $dotColor }}"></span>{{ ucfirst($item->kondisi) }}
+                </td>
+                <td>{{ $item->tanggal_pengadaan ? \Carbon\Carbon::parse($item->tanggal_pengadaan)->format('d M Y') : '-' }}</td>
+                <td>
+                  <form method="POST" action="{{ url('/masjid/inventaris/'.$item->id_inventaris) }}" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus inventaris ini?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="inv-action-icon ia-delete" style="border:none;background:none;cursor:pointer;"><i class="ti ti-trash"></i></button>
+                  </form>
+                </td>
               </tr>
+              @empty
               <tr>
-                <td>AC Daikin Inverter 2 PK</td>
-                <td><span class="cat-pill cat-elektronik">Elektronik</span></td>
-                <td><span class="kondisi-dot kd-perbaikan"></span>Perbaikan</td>
-                <td>2021</td>
-                <td><span class="inv-action-icon ia-edit"><i class="ti ti-pencil"></i></span><span class="inv-action-icon ia-delete"><i class="ti ti-trash"></i></span></td>
+                <td colspan="5" style="text-align:center;color:var(--gray-400);padding:30px;">Belum ada data inventaris.</td>
               </tr>
-              <tr>
-                <td>Mimbar Kayu Jati Ukir</td>
-                <td><span class="cat-pill cat-sarana">Sarana</span></td>
-                <td><span class="kondisi-dot kd-baik"></span>Baik</td>
-                <td>2019</td>
-                <td><span class="inv-action-icon ia-edit"><i class="ti ti-pencil"></i></span><span class="inv-action-icon ia-delete"><i class="ti ti-trash"></i></span></td>
-              </tr>
-              <tr>
-                <td>Proyektor Epson EB-X06</td>
-                <td><span class="cat-pill cat-elektronik">Elektronik</span></td>
-                <td><span class="kondisi-dot kd-baik"></span>Baik</td>
-                <td>2023</td>
-                <td><span class="inv-action-icon ia-edit"><i class="ti ti-pencil"></i></span><span class="inv-action-icon ia-delete"><i class="ti ti-trash"></i></span></td>
-              </tr>
-              <tr>
-                <td>Ampli Power Mixer Hardwell</td>
-                <td><span class="cat-pill cat-sound">Sound System</span></td>
-                <td><span class="kondisi-dot kd-rusak"></span>Rusak</td>
-                <td>2020</td>
-                <td><span class="inv-action-icon ia-edit"><i class="ti ti-pencil"></i></span><span class="inv-action-icon ia-delete"><i class="ti ti-trash"></i></span></td>
-              </tr>
+              @endforelse
             </tbody>
           </table>
           <div class="inv-pagination">
-            <span>Menampilkan 5 dari 142 aset</span>
-            <div class="pages">
-              <button class="pg-btn"><i class="ti ti-chevron-left"></i></button>
-              <button class="pg-btn active">1</button>
-              <button class="pg-btn">2</button>
-              <button class="pg-btn">3</button>
-              <button class="pg-btn"><i class="ti ti-chevron-right"></i></button>
-            </div>
+            <span>Menampilkan {{ count($inventaris) }} aset</span>
           </div>
         </div>
       </div>
 
       {{-- ════════════════ TAB: TAKMIR ════════════════ --}}
       <div class="tab-panel" id="panel-takmir">
-
         <div class="takmir-header">
           <h2>Struktur Organisasi Takmir</h2>
           <div class="takmir-tools">
-            <button class="tt-btn"><i class="ti ti-filter"></i></button>
-            <button class="tt-btn add"><i class="ti ti-plus"></i></button>
+            <button class="tt-btn add" onclick="openTakmirModal()"><i class="ti ti-plus"></i></button>
           </div>
         </div>
 
         <div class="takmir-grid">
+          @forelse($takmir as $person)
           <div class="takmir-card">
-            <div class="takmir-avatar">HF</div>
-            <div class="takmir-name">H. Farhan Saputra, M.A.</div>
-            <span class="takmir-role tr-ketua">KETUA</span>
-            <div class="takmir-contact"><i class="ti ti-phone"></i> +62 812-7000-1011</div>
-            <div class="takmir-contact"><i class="ti ti-mail"></i> farhan@masjidagungbatam.or.id</div>
+            @php
+              $words = explode(' ', $person->nama);
+              $initials = '';
+              foreach (array_slice($words, 0, 2) as $w) {
+                if (!empty($w)) $initials .= strtoupper($w[0]);
+              }
+            @endphp
+            <div class="takmir-avatar">{{ $initials ?: 'T' }}</div>
+            <div class="takmir-name">{{ $person->nama }}</div>
+            <span class="takmir-role tr-seksi">{{ strtoupper($person->jabatan) }}</span>
+            <div class="takmir-contact"><i class="ti ti-phone"></i> {{ $person->no_hp ?? '-' }}</div>
+            @if($person->masa_jabatan_mulai && $person->masa_jabatan_selesai)
+              <div class="takmir-contact" style="font-size:11px;color:var(--gray-400);">
+                <i class="ti ti-calendar"></i> {{ \Carbon\Carbon::parse($person->masa_jabatan_mulai)->format('Y') }} s/d {{ \Carbon\Carbon::parse($person->masa_jabatan_selesai)->format('Y') }}
+              </div>
+            @endif
+            <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+              <form method="POST" action="{{ url('/masjid/takmir/'.$person->id_takmir) }}" onsubmit="return confirm('Hapus personel takmir ini?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="inv-action-icon ia-delete" style="border:none;background:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;"><i class="ti ti-trash"></i> Hapus</button>
+              </form>
+            </div>
           </div>
-          <div class="takmir-card">
-            <div class="takmir-avatar">DW</div>
-            <div class="takmir-name">Drs. Dedi Wahyudi</div>
-            <span class="takmir-role tr-sekretaris">SEKRETARIS</span>
-            <div class="takmir-contact"><i class="ti ti-phone"></i> +62 813-6500-2233</div>
-            <div class="takmir-contact"><i class="ti ti-mail"></i> dedi@masjidagungbatam.or.id</div>
-          </div>
-          <div class="takmir-card">
-            <div class="takmir-avatar">IS</div>
-            <div class="takmir-name">Ir. H. Iskandar</div>
-            <span class="takmir-role tr-bendahara">BENDAHARA</span>
-            <div class="takmir-contact"><i class="ti ti-phone"></i> +62 811-7700-4455</div>
-            <div class="takmir-contact"><i class="ti ti-mail"></i> iskandar@masjidagungbatam.or.id</div>
-          </div>
-          <div class="takmir-card">
-            <div class="takmir-avatar">UR</div>
-            <div class="takmir-name">Ustadz Rizal Hakim</div>
-            <span class="takmir-role tr-seksi">SEKSI DAKWAH</span>
-            <div class="takmir-contact"><i class="ti ti-phone"></i> +62 877-3300-6677</div>
-            <div class="takmir-contact"><i class="ti ti-mail"></i> rizal@masjidagungbatam.or.id</div>
-          </div>
-          <div class="takmir-card">
-            <div class="takmir-avatar">BS</div>
-            <div class="takmir-name">Bambang Setiawan</div>
-            <span class="takmir-role tr-seksi">SEKSI SARPRAS</span>
-            <div class="takmir-contact"><i class="ti ti-phone"></i> +62 856-9900-2211</div>
-            <div class="takmir-contact"><i class="ti ti-mail"></i> bambang@masjidagungbatam.or.id</div>
-          </div>
-          <div class="takmir-card">
-            <div class="takmir-avatar">HM</div>
-            <div class="takmir-name">H. Maman Suherman</div>
-            <span class="takmir-role tr-seksi">SEKSI SOSIAL</span>
-            <div class="takmir-contact"><i class="ti ti-phone"></i> +62 899-4400-8899</div>
-            <div class="takmir-contact"><i class="ti ti-mail"></i> maman@masjidagungbatam.or.id</div>
-          </div>
-          <div class="takmir-card">
-            <div class="takmir-avatar">RP</div>
-            <div class="takmir-name">Rendi Pratama</div>
-            <span class="takmir-role tr-seksi">SEKSI HUMAS & IT</span>
-            <div class="takmir-contact"><i class="ti ti-phone"></i> +62 815-2200-3344</div>
-            <div class="takmir-contact"><i class="ti ti-mail"></i> rendi@masjidagungbatam.or.id</div>
-          </div>
-          <div class="takmir-card add-card">
+          @empty
+          @endforelse
+          
+          <div class="takmir-card add-card" onclick="openTakmirModal()">
             <div class="plus-icon"><i class="ti ti-user-plus"></i></div>
             Tambah Personel
           </div>
@@ -565,155 +558,134 @@ body { font-family: 'Inter', sans-serif; }
         <div class="takmir-meta">
           <div class="tm-card">
             <div class="tm-icon"><i class="ti ti-calendar"></i></div>
-            <div><div class="tm-label">Masa Bakti</div><div class="tm-val">2024 - 2027</div></div>
+            <div><div class="tm-label">Masa Bakti</div><div class="tm-val">Periode Aktif</div></div>
           </div>
           <div class="tm-card">
             <div class="tm-icon"><i class="ti ti-file-text"></i></div>
-            <div><div class="tm-label">Nomor SK</div><div class="tm-val">SK/PCM-BTK/012/I/24</div></div>
+            <div><div class="tm-label">Nomor SK</div><div class="tm-val">{{ $masjid->no_sk ?? '-' }}</div></div>
           </div>
           <div class="tm-card">
             <div class="tm-icon"><i class="ti ti-users"></i></div>
-            <div><div class="tm-label">Total Personel</div><div class="tm-val">25 Anggota</div></div>
+            <div><div class="tm-label">Total Personel</div><div class="tm-val">{{ count($takmir) }} Anggota</div></div>
           </div>
         </div>
       </div>
 
       {{-- ════════════════ TAB: LEGALITAS ════════════════ --}}
       <div class="tab-panel" id="panel-legalitas">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+          <button class="btn btn-primary btn-sm" onclick="openLegalitasModal()">
+            <i class="ti ti-plus"></i> Tambah Legalitas
+          </button>
+        </div>
 
         <div class="legal-grid">
+          @forelse($legalitas as $leg)
           <div class="legal-card">
             <div class="legal-card-top">
-              <h4>Sertifikat Wakaf (AIW/APAIW)</h4>
-              <span class="legal-status-pill lsp-done">Lengkap</span>
+              <h4>{{ $leg->jenis_sertifikat }}</h4>
+              <span class="legal-status-pill {{ $leg->status === 'aktif' ? 'lsp-done' : 'lsp-proses' }}">
+                {{ ucfirst($leg->status) }}
+              </span>
             </div>
             <p class="desc">Nomor Dokumen</p>
-            <div class="doc-no">W2.BTM.05.01.2001</div>
-          </div>
-
-          <div class="legal-card">
-            <div class="legal-card-top">
-              <h4>SK Pendirian Masjid</h4>
-              <span class="legal-status-pill lsp-done">Lengkap</span>
+            <div class="doc-no">{{ $leg->nomor_sertifikat ?? '-' }}</div>
+            @if($leg->tanggal_terbit)
+              <div style="font-size:12px;color:var(--gray-500);margin-top:6px;">
+                <i class="ti ti-calendar"></i> Terbit: {{ \Carbon\Carbon::parse($leg->tanggal_terbit)->format('d M Y') }}
+              </div>
+            @endif
+            <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:6px;">
+              <button class="inv-action-icon ia-edit" onclick="openEditLegalitasModal('{{ $leg->id_legalitas }}', '{{ $leg->jenis_sertifikat }}', '{{ $leg->nomor_sertifikat }}', '{{ $leg->status }}')" style="border:none;background:none;cursor:pointer;font-size:12px;font-weight:700;"><i class="ti ti-pencil"></i> Edit</button>
             </div>
-            <p class="desc">Nomor Dokumen</p>
-            <div class="doc-no">451/SK-PCM/BTK/2001</div>
           </div>
-
-          <div class="legal-card">
-            <div class="legal-card-top">
-              <h4>IMB / PBG Bangunan</h4>
-              <span class="legal-status-pill lsp-done">Lengkap</span>
-            </div>
-            <p class="desc">Nomor Dokumen</p>
-            <div class="doc-no">IMB-2002-00871/BTM</div>
+          @empty
+          <div class="empty" style="grid-column:1/-1;">
+            <i class="ti ti-certificate"></i>
+            Belum ada data legalitas.
           </div>
-
-          <div class="legal-card">
-            <div class="legal-card-top">
-              <h4>NPWP Lembaga</h4>
-              <span class="legal-status-pill lsp-proses">Proses Pengajuan</span>
-            </div>
-            <p class="desc">Nomor Dokumen</p>
-            <div class="doc-no">Menunggu penerbitan KPP</div>
-          </div>
+          @endforelse
         </div>
 
         <div class="verify-footer">
           <div class="verify-left">
-            <span class="verify-badge"><i class="ti ti-shield-check"></i> STATUS LEGALITAS: WAKAF SAH</span>
-            <span class="verify-meta">Diverifikasi oleh Admin Cabang pada 12 Jun 2026</span>
-          </div>
-          <div class="verify-actions">
-            <a href="#"><i class="ti ti-download" style="margin-right:4px;"></i>Unduh Semua Dokumen</a>
+            <span class="verify-badge"><i class="ti ti-shield-check"></i> STATUS LEGALITAS: {{ strtoupper($masjid->status_legalitas ?? 'Proses') }}</span>
           </div>
         </div>
       </div>
 
       {{-- ════════════════ TAB: PENGAJUAN ════════════════ --}}
       <div class="tab-panel" id="panel-pengajuan">
-
         <div class="pengajuan-stats">
           <div class="pj-stat-card">
             <div class="pj-stat-top"><i class="ti ti-clipboard-list"></i></div>
             <div class="pj-stat-label">Total Pengajuan</div>
-            <div class="pj-stat-val">9</div>
-            <div class="pj-stat-sub">Dalam kurun waktu tahun 2026</div>
+            <div class="pj-stat-val">{{ count($pengajuan) }}</div>
+            <div class="pj-stat-sub">Seluruh riwayat permohonan</div>
           </div>
           <div class="pj-stat-card">
             <div class="pj-stat-top"><i class="ti ti-clock-hour-4"></i></div>
             <div class="pj-stat-label">Sedang Diproses</div>
-            <div class="pj-stat-val" style="color:#b45309;">1</div>
+            <div class="pj-stat-val" style="color:#b45309;">{{ $pengajuan->where('status', 'pending')->count() }}</div>
             <div class="pj-stat-sub">Menunggu approval Admin Cabang</div>
           </div>
           <div class="pj-stat-card">
             <div class="pj-stat-top"><i class="ti ti-checks"></i></div>
-            <div class="pj-stat-label">Tingkat Approval</div>
-            <div class="pj-stat-val" style="color:var(--green-700);">88%</div>
-            <div class="pj-stat-sub">8 dari 9 pengajuan disetujui</div>
+            <div class="pj-stat-label">Disetujui</div>
+            <div class="pj-stat-val" style="color:var(--green-700);">{{ $pengajuan->where('status', 'approved')->count() }}</div>
+            <div class="pj-stat-sub">Jumlah permohonan disetujui</div>
           </div>
         </div>
 
         <div class="pengajuan-header">
           <div class="pj-filters">
             <button class="pj-filter-pill active">Semua</button>
-            <button class="pj-filter-pill">Sedang Diproses</button>
-            <button class="pj-filter-pill">Disetujui</button>
-            <button class="pj-filter-pill">Ditolak</button>
           </div>
-          <button class="btn-new-request"><i class="ti ti-plus"></i> Buat Pengajuan Baru</button>
+          <button class="btn-new-request" onclick="openPengajuanModal()"><i class="ti ti-plus"></i> Buat Pengajuan Baru</button>
         </div>
 
         <div class="pj-table-card">
           <table class="pj-table">
             <thead>
-              <tr><th>ID Pengajuan</th><th>Jenis</th><th>Tanggal</th><th>Status</th><th>Catatan Admin</th><th>Aksi</th></tr>
+              <tr><th>ID Pengajuan</th><th>Deskripsi</th><th>Tanggal</th><th>Status</th><th>Catatan Admin / Alasan</th></tr>
             </thead>
             <tbody>
-              <tr class="row-highlight">
-                <td class="pj-id">#REQ-2026-091</td>
-                <td><div class="pj-jenis"><i class="ti ti-file-text" style="color:var(--gray-400);"></i>Renovasi Atap Utama</div></td>
-                <td>02 Jun 2026</td>
-                <td><span class="pj-status-pill ps-proses">SEDANG DIPROSES</span></td>
-                <td><span class="pj-note warn">Menunggu verifikasi RAB dari Admin Cabang.</span></td>
-                <td><i class="ti ti-eye" style="color:var(--gray-400);cursor:pointer;"></i></td>
+              @forelse($pengajuan as $pj)
+              <tr class="{{ $pj->status === 'pending' ? 'row-highlight' : '' }}">
+                <td class="pj-id">#{{ $pj->id_pengajuan }}</td>
+                <td>
+                  <div class="pj-note" style="font-weight:600;font-style:normal;color:var(--gray-800);">
+                    {{ $pj->deskripsi }}
+                  </div>
+                </td>
+                <td>{{ \Carbon\Carbon::parse($pj->created_at)->format('d M Y') }}</td>
+                <td>
+                  @php
+                    $badgeClass = match($pj->status) {
+                      'approved' => 'ps-disetujui',
+                      'rejected' => 'ps-ditolak',
+                      default => 'ps-proses'
+                    };
+                  @endphp
+                  <span class="pj-status-pill {{ $badgeClass }}">{{ strtoupper($pj->status) }}</span>
+                </td>
+                <td>
+                  @if($pj->status === 'rejected')
+                    <span class="pj-note danger">{{ $pj->alasan_penolakan ?? 'Pengajuan ditolak oleh Admin Cabang.' }}</span>
+                  @elseif($pj->status === 'approved')
+                    <span class="pj-note">Disetujui.</span>
+                  @else
+                    <span class="pj-note warn">Menunggu persetujuan Admin Cabang.</span>
+                  @endif
+                </td>
               </tr>
+              @empty
               <tr>
-                <td class="pj-id">#REQ-2026-077</td>
-                <td><div class="pj-jenis"><i class="ti ti-coin" style="color:var(--gray-400);"></i>Pencairan Dana Operasional</div></td>
-                <td>18 Mei 2026</td>
-                <td><span class="pj-status-pill ps-disetujui">DISETUJUI</span></td>
-                <td><span class="pj-note">Dana telah dicairkan ke rekening masjid via Bank Syariah Indonesia.</span></td>
-                <td><i class="ti ti-eye" style="color:var(--gray-400);cursor:pointer;"></i></td>
+                <td colspan="5" style="text-align:center;color:var(--gray-400);padding:20px;">Belum ada pengajuan.</td>
               </tr>
-              <tr>
-                <td class="pj-id">#REQ-2026-058</td>
-                <td><div class="pj-jenis"><i class="ti ti-users" style="color:var(--gray-400);"></i>Perubahan Struktur Takmir</div></td>
-                <td>30 Apr 2026</td>
-                <td><span class="pj-status-pill ps-ditolak">DITOLAK</span></td>
-                <td><span class="pj-note danger">SK Pengangkatan belum ditandatangani Ketua PCM. Unggah ulang dokumen yang valid.</span></td>
-                <td><i class="ti ti-eye" style="color:var(--gray-400);cursor:pointer;"></i></td>
-              </tr>
-              <tr>
-                <td class="pj-id">#REQ-2026-019</td>
-                <td><div class="pj-jenis"><i class="ti ti-certificate" style="color:var(--gray-400);"></i>Update Dokumen NPWP</div></td>
-                <td>10 Feb 2026</td>
-                <td><span class="pj-status-pill ps-disetujui">DISETUJUI</span></td>
-                <td><span class="pj-note">Berkas diteruskan ke KPP untuk proses penerbitan.</span></td>
-                <td><i class="ti ti-eye" style="color:var(--gray-400);cursor:pointer;"></i></td>
-              </tr>
+              @endforelse
             </tbody>
           </table>
-          <div class="inv-pagination">
-            <span>Menampilkan 1-4 dari 9 pengajuan</span>
-            <div class="pages">
-              <button class="pg-btn"><i class="ti ti-chevron-left"></i></button>
-              <button class="pg-btn active">1</button>
-              <button class="pg-btn">2</button>
-              <button class="pg-btn">3</button>
-              <button class="pg-btn"><i class="ti ti-chevron-right"></i></button>
-            </div>
-          </div>
         </div>
 
         <div class="flow-card">
@@ -747,6 +719,182 @@ body { font-family: 'Inter', sans-serif; }
   </div>
 </div>
 
+<!-- ── MODAL TAMBAH INVENTARIS ── -->
+<div class="aa-modal-overlay" id="inventarisModalOverlay" onclick="closeOnBgInventaris(event)">
+  <div class="aa-modal-box">
+    <div class="aa-modal-header">
+      <h3><i class="ti ti-box" style="margin-right:6px;color:#1e6b3f;"></i>Tambah Inventaris Baru</h3>
+      <button class="aa-modal-close" onclick="closeInventarisModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <form method="POST" action="{{ url('/masjid/inventaris') }}">
+      @csrf
+      <div class="aa-modal-body">
+        <div class="aa-form-group">
+          <label>Nama Barang / Aset <span class="req">*</span></label>
+          <input type="text" name="nama_barang" placeholder="Contoh: AC Daikin Inverter 2 PK" required>
+        </div>
+        <div class="aa-form-group">
+          <label>Jumlah Unit <span class="req">*</span></label>
+          <input type="number" name="jumlah" min="1" value="1" required>
+        </div>
+        <div class="aa-form-group">
+          <label>Kondisi Barang <span class="req">*</span></label>
+          <select name="kondisi" required>
+            <option value="baik">Baik</option>
+            <option value="rusak ringan">Rusak Ringan</option>
+            <option value="rusak berat">Rusak Berat</option>
+          </select>
+        </div>
+        <div class="aa-form-group">
+          <label>Tanggal Pengadaan</label>
+          <input type="date" name="tanggal_pengadaan" value="{{ date('Y-m-d') }}">
+        </div>
+      </div>
+      <div class="aa-modal-footer">
+        <button type="button" class="aa-btn-cancel" onclick="closeInventarisModal()">Batal</button>
+        <button type="submit" class="aa-btn-save"><i class="ti ti-device-floppy"></i> Simpan Inventaris</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── MODAL TAMBAH TAKMIR ── -->
+<div class="aa-modal-overlay" id="takmirModalOverlay" onclick="closeOnBgTakmir(event)">
+  <div class="aa-modal-box">
+    <div class="aa-modal-header">
+      <h3><i class="ti ti-user-plus" style="margin-right:6px;color:#1e6b3f;"></i>Tambah Personel Takmir</h3>
+      <button class="aa-modal-close" onclick="closeTakmirModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <form method="POST" action="{{ url('/masjid/takmir') }}">
+      @csrf
+      <div class="aa-modal-body">
+        <div class="aa-form-group">
+          <label>Nama Lengkap <span class="req">*</span></label>
+          <input type="text" name="nama" placeholder="Contoh: Drs. H. Ahmad Fauzi" required>
+        </div>
+        <div class="aa-form-group">
+          <label>Jabatan / Peran <span class="req">*</span></label>
+          <input type="text" name="jabatan" placeholder="Contoh: Ketua, Sekretaris, Seksi Dakwah" required>
+        </div>
+        <div class="aa-form-group">
+          <label>Nomor WhatsApp / HP</label>
+          <input type="text" name="no_hp" placeholder="Contoh: 081234567890">
+        </div>
+        <div class="aa-form-row-2">
+          <div class="aa-form-group">
+            <label>Masa Jabatan Mulai</label>
+            <input type="date" name="masa_jabatan_mulai" value="{{ date('Y-m-d') }}">
+          </div>
+          <div class="aa-form-group">
+            <label>Masa Jabatan Selesai</label>
+            <input type="date" name="masa_jabatan_selesai" value="{{ date('Y-m-d', strtotime('+3 years')) }}">
+          </div>
+        </div>
+      </div>
+      <div class="aa-modal-footer">
+        <button type="button" class="aa-btn-cancel" onclick="closeTakmirModal()">Batal</button>
+        <button type="submit" class="aa-btn-save"><i class="ti ti-device-floppy"></i> Simpan Takmir</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── MODAL TAMBAH LEGALITAS ── -->
+<div class="aa-modal-overlay" id="legalitasModalOverlay" onclick="closeOnBgLegalitas(event)">
+  <div class="aa-modal-box">
+    <div class="aa-modal-header">
+      <h3><i class="ti ti-certificate" style="margin-right:6px;color:#1e6b3f;"></i>Tambah Legalitas Baru</h3>
+      <button class="aa-modal-close" onclick="closeLegalitasModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <form method="POST" action="{{ url('/masjid/legalitas') }}">
+      @csrf
+      <div class="aa-modal-body">
+        <div class="aa-form-group">
+          <label>Jenis Sertifikat / Dokumen <span class="req">*</span></label>
+          <input type="text" name="jenis_sertifikat" placeholder="Contoh: Sertifikat Wakaf (AIW), SK Pendirian, IMB" required>
+        </div>
+        <div class="aa-form-group">
+          <label>Nomor Sertifikat / Dokumen</label>
+          <input type="text" name="nomor_sertifikat" placeholder="Contoh: W2.BTM.05.01.2001">
+        </div>
+        <div class="aa-form-group">
+          <label>Tanggal Terbit</label>
+          <input type="date" name="tanggal_terbit" value="{{ date('Y-m-d') }}">
+        </div>
+        <div class="aa-form-group">
+          <label>Status Dokumen</label>
+          <select name="status">
+            <option value="aktif">Aktif</option>
+            <option value="tidak aktif">Tidak Aktif</option>
+          </select>
+        </div>
+      </div>
+      <div class="aa-modal-footer">
+        <button type="button" class="aa-btn-cancel" onclick="closeLegalitasModal()">Batal</button>
+        <button type="submit" class="aa-btn-save"><i class="ti ti-device-floppy"></i> Simpan Legalitas</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── MODAL EDIT LEGALITAS ── -->
+<div class="aa-modal-overlay" id="editLegalitasModalOverlay" onclick="closeOnBgEditLegalitas(event)">
+  <div class="aa-modal-box">
+    <div class="aa-modal-header">
+      <h3><i class="ti ti-edit" style="margin-right:6px;color:#1e6b3f;"></i>Edit Legalitas</h3>
+      <button class="aa-modal-close" onclick="closeEditLegalitasModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <form method="POST" id="editLegalitasForm" action="">
+      @csrf
+      @method('PUT')
+      <div class="aa-modal-body">
+        <div class="aa-form-group">
+          <label>Jenis Sertifikat / Dokumen <span class="req">*</span></label>
+          <input type="text" name="jenis_sertifikat" id="edit_legalitas_jenis" required>
+        </div>
+        <div class="aa-form-group">
+          <label>Nomor Sertifikat / Dokumen</label>
+          <input type="text" name="nomor_sertifikat" id="edit_legalitas_nomor">
+        </div>
+        <div class="aa-form-group">
+          <label>Status Dokumen</label>
+          <select name="status" id="edit_legalitas_status">
+            <option value="aktif">Aktif</option>
+            <option value="tidak aktif">Tidak Aktif</option>
+          </select>
+        </div>
+      </div>
+      <div class="aa-modal-footer">
+        <button type="button" class="aa-btn-cancel" onclick="closeEditLegalitasModal()">Batal</button>
+        <button type="submit" class="aa-btn-save"><i class="ti ti-device-floppy"></i> Simpan Perubahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── MODAL TAMBAH PENGAJUAN ── -->
+<div class="aa-modal-overlay" id="pengajuanModalOverlay" onclick="closeOnBgPengajuan(event)">
+  <div class="aa-modal-box">
+    <div class="aa-modal-header">
+      <h3><i class="ti ti-clipboard-list" style="margin-right:6px;color:#1e6b3f;"></i>Buat Pengajuan Baru</h3>
+      <button class="aa-modal-close" onclick="closePengajuanModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <form method="POST" action="{{ url('/masjid/pengajuan') }}">
+      @csrf
+      <div class="aa-modal-body">
+        <div class="aa-form-group">
+          <label>Deskripsi Pengajuan / Permohonan <span class="req">*</span></label>
+          <textarea name="deskripsi" placeholder="Tuliskan detail permohonan Anda di sini (maksimal 500 karakter)..." required style="width:100%; min-height:120px; padding:10px; border:1.5px solid #d1d5db; border-radius:8px; font-family:inherit; outline:none; font-size:13px;"></textarea>
+        </div>
+      </div>
+      <div class="aa-modal-footer">
+        <button type="button" class="aa-btn-cancel" onclick="closePengajuanModal()">Batal</button>
+        <button type="submit" class="aa-btn-save"><i class="ti ti-send"></i> Kirim Pengajuan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 document.querySelectorAll('.masjid-tab').forEach(function(tab) {
   tab.addEventListener('click', function() {
@@ -755,6 +903,82 @@ document.querySelectorAll('.masjid-tab').forEach(function(tab) {
     this.classList.add('active');
     document.getElementById('panel-' + this.dataset.tab).classList.add('active');
   });
+});
+
+function openInventarisModal() {
+  document.getElementById('inventarisModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeInventarisModal() {
+  document.getElementById('inventarisModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeOnBgInventaris(e) {
+  if (e.target === document.getElementById('inventarisModalOverlay')) closeInventarisModal();
+}
+
+function openTakmirModal() {
+  document.getElementById('takmirModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeTakmirModal() {
+  document.getElementById('takmirModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeOnBgTakmir(e) {
+  if (e.target === document.getElementById('takmirModalOverlay')) closeTakmirModal();
+}
+
+function openLegalitasModal() {
+  document.getElementById('legalitasModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLegalitasModal() {
+  document.getElementById('legalitasModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeOnBgLegalitas(e) {
+  if (e.target === document.getElementById('legalitasModalOverlay')) closeLegalitasModal();
+}
+
+function openEditLegalitasModal(id, jenis, nomor, status) {
+  const form = document.getElementById('editLegalitasForm');
+  form.action = "{{ url('/masjid/legalitas') }}/" + id;
+  document.getElementById('edit_legalitas_jenis').value = jenis;
+  document.getElementById('edit_legalitas_nomor').value = nomor;
+  document.getElementById('edit_legalitas_status').value = status;
+  
+  document.getElementById('editLegalitasModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeEditLegalitasModal() {
+  document.getElementById('editLegalitasModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeOnBgEditLegalitas(e) {
+  if (e.target === document.getElementById('editLegalitasModalOverlay')) closeEditLegalitasModal();
+}
+
+function openPengajuanModal() {
+  document.getElementById('pengajuanModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePengajuanModal() {
+  document.getElementById('pengajuanModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeOnBgPengajuan(e) {
+  if (e.target === document.getElementById('pengajuanModalOverlay')) closePengajuanModal();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeInventarisModal();
+    closeTakmirModal();
+    closeLegalitasModal();
+    closeEditLegalitasModal();
+    closePengajuanModal();
+  }
 });
 </script>
 </body>

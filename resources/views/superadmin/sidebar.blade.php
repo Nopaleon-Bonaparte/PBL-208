@@ -69,10 +69,10 @@
       <i class="ti ti-layout-dashboard"></i> Ringkasan Utama
     </a>
 
-    <div class="sa-nav-label">Persetujuan</div>
-    <a href="{{ url('/superadmin/persetujuan') }}"
-       class="sa-nav-item {{ ($activeNav ?? '') === 'persetujuan' ? 'active' : '' }}">
-      <i class="ti ti-clipboard-check"></i> Antrian Persetujuan
+    <div class="sa-nav-label">Data Jadi</div>
+    <a href="{{ url('/superadmin/status-masjid') }}"
+       class="sa-nav-item {{ ($activeNav ?? '') === 'status-masjid' ? 'active' : '' }}">
+      <i class="ti ti-building-mosque"></i> Data Masjid
     </a>
 
     <div class="sa-nav-label">Monitoring</div>
@@ -83,10 +83,6 @@
     <a href="{{ url('/superadmin/status-ranting') }}"
        class="sa-nav-item {{ ($activeNav ?? '') === 'status-ranting' ? 'active' : '' }}">
       <i class="ti ti-home-2"></i> Status Ranting
-    </a>
-    <a href="{{ url('/superadmin/status-masjid') }}"
-       class="sa-nav-item {{ ($activeNav ?? '') === 'status-masjid' ? 'active' : '' }}">
-      <i class="ti ti-building-mosque"></i> Status Masjid
     </a>
 
     <div class="sa-nav-label">Administrasi</div>

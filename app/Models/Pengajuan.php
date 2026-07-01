@@ -13,15 +13,26 @@ class Pengajuan extends Model
     protected $fillable = [
         'id_pengajuan',
         'id_masjid',
-        'jenis_pengajuan',
+        'id_user_pengaju',
+        'jenis_pengajuan',   // tambah_masjid | edit_masjid
         'deskripsi',
-        'status',
+        'data_baru',         // JSON usulan perubahan/penambahan
+        'status',            // pending | approved | rejected
         'alasan_penolakan',
+    ];
+
+    protected $casts = [
+        'data_baru' => 'array',
     ];
 
     public function masjid()
     {
         return $this->belongsTo(Masjid::class, 'id_masjid', 'id_masjid');
+    }
+
+    public function pengaju()
+    {
+        return $this->belongsTo(User::class, 'id_user_pengaju', 'id_user');
     }
 
     public function persetujuan()

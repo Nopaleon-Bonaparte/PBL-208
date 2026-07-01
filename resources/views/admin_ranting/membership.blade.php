@@ -330,12 +330,12 @@ window.addEventListener('load', function() {
 
             @forelse($daftarPengajuan ?? [] as $p)
             @php
-              $dotColor   = match($p->status) { 'Disetujui' => '#22c55e', 'Ditolak' => '#ef4444', default => '#f59e0b' };
-              $statusText = match($p->status) { 'Disetujui' => 'DISETUJUI', 'Ditolak' => 'DITOLAK', default => 'PENDING' };
+              $dotColor   = match($p->status) { 'approved' => '#22c55e', 'rejected' => '#ef4444', default => '#f59e0b' };
+              $statusText = match($p->status) { 'approved' => 'DISETUJUI', 'rejected' => 'DITOLAK', default => 'PENDING' };
               $statusColor = match($p->status) {
-                'Disetujui' => 'color:var(--green-600)',
-                'Ditolak'   => 'color:var(--red-text)',
-                default     => 'color:#b45309'
+                'approved' => 'color:var(--green-600)',
+                'rejected' => 'color:var(--red-text)',
+                default    => 'color:#b45309'
               };
             @endphp
             <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--gray-100);">

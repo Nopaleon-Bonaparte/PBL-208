@@ -49,6 +49,18 @@ class AuthController extends Controller
             ]);
         }
 
+        // ── Cek status akun (akun nonaktif tidak boleh login) ──
+        if (isset($user->status_akun) && $user->status_akun === 'Nonaktif') {
+            return redirect('/login')->withErrors([
+                'loginError' => 'Akun Anda nonaktif. Hubungi administrator.',
+            ]);
+        }
+
+        // ── Catat waktu login terakhir (untuk pemantauan keaktifan superadmin) ──
+        DB::table('user')->where('id_user', $user->id_user)->update([
+            'terakhir_login' => now(),
+        ]);
+
         // ── Set session dasar ──
         $request->session()->put('is_logged_in', true);
         $request->session()->put('id_user', $user->id_user);
