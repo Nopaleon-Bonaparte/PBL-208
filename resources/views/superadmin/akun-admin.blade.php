@@ -87,9 +87,17 @@ body { font-family: 'Inter', sans-serif; }
           <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Manajemen Akun Administrator</h2>
           <p class="text-gray-500 font-medium mt-1">Kelola hak akses dan identitas untuk admin Cabang, Ranting, dan Masjid di lingkungan PDM Kota Batam.</p>
         </div>
-        <button class="bg-green-700 hover:bg-green-800 text-white px-5 py-2.5 rounded-lg font-semibold text-sm shadow transition flex items-center gap-2" onclick="openAkunModal()">
-          <i class="ti ti-plus"></i> Tambah Akun Baru
-        </button>
+        <div class="flex items-center gap-2">
+          <button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg font-semibold text-sm shadow-sm transition flex items-center gap-2" onclick="openCabangModal()">
+            <i class="ti ti-building-community"></i> Tambah Cabang
+          </button>
+          <button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg font-semibold text-sm shadow-sm transition flex items-center gap-2" onclick="openRantingModal()">
+            <i class="ti ti-git-branch"></i> Tambah Ranting
+          </button>
+          <button class="bg-green-700 hover:bg-green-800 text-white px-5 py-2.5 rounded-lg font-semibold text-sm shadow transition flex items-center gap-2" onclick="openAkunModal()">
+            <i class="ti ti-plus"></i> Tambah Akun Baru
+          </button>
+        </div>
       </div>
 
       @if(session('success'))
@@ -280,6 +288,65 @@ body { font-family: 'Inter', sans-serif; }
   </div>
 </div>
 
+<!-- ── MODAL TAMBAH CABANG ── -->
+<div class="aa-modal-overlay" id="cabangModalOverlay" onclick="closeOnBgCabang(event)">
+  <div class="aa-modal-box">
+    <div class="aa-modal-header">
+      <h3><i class="ti ti-building-community" style="margin-right:6px;color:#1e6b3f;"></i>Tambah Cabang Baru</h3>
+      <button class="aa-modal-close" onclick="closeCabangModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <form method="POST" action="{{ url('/superadmin/cabang') }}">
+      @csrf
+      <div class="aa-modal-body">
+        <div class="aa-form-group">
+          <label>Nama Cabang (PCM) <span class="req">*</span></label>
+          <input type="text" name="nama_cabang" placeholder="Contoh: PCM Batu Aji" required>
+        </div>
+        <div class="aa-form-group">
+          <label>Wilayah</label>
+          <input type="text" name="wilayah" placeholder="Kota Batam" value="Kota Batam">
+        </div>
+      </div>
+      <div class="aa-modal-footer">
+        <button type="button" class="aa-btn-cancel" onclick="closeCabangModal()">Batal</button>
+        <button type="submit" class="aa-btn-save"><i class="ti ti-device-floppy"></i> Simpan Cabang</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── MODAL TAMBAH RANTING ── -->
+<div class="aa-modal-overlay" id="rantingModalOverlay" onclick="closeOnBgRanting(event)">
+  <div class="aa-modal-box">
+    <div class="aa-modal-header">
+      <h3><i class="ti ti-git-branch" style="margin-right:6px;color:#1e6b3f;"></i>Tambah Ranting Baru</h3>
+      <button class="aa-modal-close" onclick="closeRantingModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <form method="POST" action="{{ url('/superadmin/ranting') }}">
+      @csrf
+      <div class="aa-modal-body">
+        <div class="aa-form-group">
+          <label>Nama Ranting (PRM) <span class="req">*</span></label>
+          <input type="text" name="nama_ranting" placeholder="Contoh: PRM Bukit Indah" required>
+        </div>
+        <div class="aa-form-group">
+          <label>Cabang Induk <span class="req">*</span></label>
+          <select name="id_cabang" required>
+            <option value="">— Pilih Cabang —</option>
+            @foreach(\Illuminate\Support\Facades\DB::table('cabang')->get() as $c)
+              <option value="{{ $c->id_cabang }}">{{ $c->nama_cabang }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+      <div class="aa-modal-footer">
+        <button type="button" class="aa-btn-cancel" onclick="closeRantingModal()">Batal</button>
+        <button type="submit" class="aa-btn-save"><i class="ti ti-device-floppy"></i> Simpan Ranting</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 function openAkunModal() {
   document.getElementById('aaModalOverlay').classList.add('open');
@@ -298,6 +365,14 @@ function toggleUnitField() {
   document.getElementById('aaUnitMasjidField').style.display = (role === 'R02') ? 'block' : 'none';
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAkunModal(); });
+
+function openCabangModal() { document.getElementById('cabangModalOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCabangModal() { document.getElementById('cabangModalOverlay').classList.remove('open'); document.body.style.overflow=''; }
+function closeOnBgCabang(e) { if (e.target === document.getElementById('cabangModalOverlay')) closeCabangModal(); }
+
+function openRantingModal() { document.getElementById('rantingModalOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeRantingModal() { document.getElementById('rantingModalOverlay').classList.remove('open'); document.body.style.overflow=''; }
+function closeOnBgRanting(e) { if (e.target === document.getElementById('rantingModalOverlay')) closeRantingModal(); }
 </script>
 </body>
 </html>

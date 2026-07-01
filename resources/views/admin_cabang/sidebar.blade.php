@@ -80,14 +80,14 @@
     <i class="ti ti-building-mosque"></i><span>Data Masjid</span>
   </a>
 
+  <a href="{{ url('/pcm/persetujuan') }}"
+     class="nav-item {{ ($activeNav ?? '') === 'persetujuan' ? 'active' : '' }}">
+    <i class="ti ti-checkup-list"></i><span>Antrian Persetujuan</span>
+  </a>
+
   <a href="{{ url('/pcm/legal-status') }}"
      class="nav-item {{ ($activeNav ?? '') === 'legal-status' ? 'active' : '' }}">
     <i class="ti ti-certificate"></i><span>Legalitas Status</span>
-  </a>
-
-  <a href="{{ url('/pcm/ranting-status') }}"
-     class="nav-item {{ ($activeNav ?? '') === 'ranting-status' ? 'active' : '' }}">
-    <i class="ti ti-git-branch"></i><span>Status Ranting</span>
   </a>
 
   <div class="nav-spacer"></div>

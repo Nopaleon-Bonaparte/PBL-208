@@ -161,4 +161,60 @@ class AkunAdminController extends Controller
 
         return redirect('/superadmin/akun-admin')->with('success', 'Password berhasil direset ke default.');
     }
+
+    /**
+     * Tambah CABANG baru (hanya Superadmin).
+     */
+    public function storeCabang(Request $request)
+    {
+        if (session('id_role') != 'R99') {
+            return redirect('/dashboard');
+        }
+
+        $request->validate([
+            'nama_cabang' => 'required|string|max:100',
+            'wilayah'     => 'nullable|string|max:100',
+        ]);
+
+        $last = DB::table('cabang')->orderBy('id_cabang', 'desc')->value('id_cabang');
+        $n = $last ? ((int) substr($last, 2)) + 1 : 1;
+        $idCabang = 'CB' . str_pad((string) $n, 2, '0', STR_PAD_LEFT);
+
+        DB::table('cabang')->insert([
+            'id_cabang'               => $idCabang,
+            'nama_cabang'             => $request->nama_cabang,
+            'wilayah'                 => $request->wilayah ?: 'Kota Batam',
+            'status_keaktifan_cabang' => 'Aktif',
+        ]);
+
+        return redirect('/superadmin/akun-admin')->with('success', "Cabang {$request->nama_cabang} ditambahkan.");
+    }
+
+    /**
+     * Tambah RANTING baru (hanya Superadmin).
+     */
+    public function storeRanting(Request $request)
+    {
+        if (session('id_role') != 'R99') {
+            return redirect('/dashboard');
+        }
+
+        $request->validate([
+            'nama_ranting' => 'required|string|max:100',
+            'id_cabang'    => 'required|string|exists:cabang,id_cabang',
+        ]);
+
+        $last = DB::table('ranting')->orderBy('id_ranting', 'desc')->value('id_ranting');
+        $n = $last ? ((int) substr($last, 2)) + 1 : 1;
+        $idRanting = 'RT' . str_pad((string) $n, 2, '0', STR_PAD_LEFT);
+
+        DB::table('ranting')->insert([
+            'id_ranting'               => $idRanting,
+            'nama_ranting'             => $request->nama_ranting,
+            'status_keaktifan_ranting' => 'Aktif',
+            'id_cabang'                => $request->id_cabang,
+        ]);
+
+        return redirect('/superadmin/akun-admin')->with('success', "Ranting {$request->nama_ranting} ditambahkan.");
+    }
 }

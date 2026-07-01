@@ -22,6 +22,26 @@ body { font-family: 'Inter', sans-serif; }
   box-shadow: 0 8px 20px rgba(30,107,63,.13);
   border-color: #6ee7a0;
 }
+
+/* ── KARTU STATISTIK KEAKTIFAN ── */
+.stat-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+.stat-card {
+  background:#fff; border:1px solid var(--gray-200); border-radius:12px;
+  padding:16px 14px; display:flex; flex-direction:column;
+  align-items:center; text-align:center; gap:2px;
+}
+.stat-card-icon {
+  font-size:18px; width:34px; height:34px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:8px; margin-bottom:4px; background:var(--green-50);
+}
+.sc-kurang .stat-card-icon { background:#fffbeb; }
+.sc-vakum  .stat-card-icon { background:#fff5f5; }
+.stat-card-num   { font-size:24px; font-weight:700; line-height:1; }
+.stat-card-label { font-size:11.5px; font-weight:600; }
+.sc-aktif  .stat-card-icon, .sc-aktif  .stat-card-num, .sc-aktif  .stat-card-label { color:var(--green-600); }
+.sc-kurang .stat-card-icon, .sc-kurang .stat-card-num, .sc-kurang .stat-card-label { color:#d97706; }
+.sc-vakum  .stat-card-icon, .sc-vakum  .stat-card-num, .sc-vakum  .stat-card-label { color:#dc2626; }
 </style>
 </head>
 <body>
@@ -93,52 +113,56 @@ body { font-family: 'Inter', sans-serif; }
             <a href="{{ url('/superadmin/status-cabang') }}" class="card-link">Lihat Semua</a>
           </div>
           <div style="padding:0;">
-            @php
-            $demoCabang = [
-              ['nama' => 'Batu Aji',        'status' => 'Aktif',        'color' => '#22c55e', 'badge' => 'badge-aktif'],
-              ['nama' => 'Batu Ampar',       'status' => 'Aktif',        'color' => '#22c55e', 'badge' => 'badge-aktif'],
-              ['nama' => 'Belakang Padang',  'status' => 'Kurang Aktif', 'color' => '#f59e0b', 'badge' => 'badge-kurang'],
-              ['nama' => 'Nongsa',           'status' => 'Aktif',        'color' => '#22c55e', 'badge' => 'badge-aktif'],
-              ['nama' => 'Sagulung',         'status' => 'Vakum',        'color' => '#ef4444', 'badge' => 'badge-vakum'],
-            ];
-            @endphp
-            @foreach($demoCabang as $cb)
+            @forelse(($daftarCabang ?? []) as $cb)
             <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--gray-100);">
-              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">{{ $cb['nama'] }}</span>
-              <span class="badge {{ $cb['badge'] }}">{{ strtoupper($cb['status']) }}</span>
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">{{ $cb->nama }}</span>
+              <span class="badge {{ $cb->badge }}">{{ strtoupper($cb->status) }}</span>
             </div>
-            @endforeach
+            @empty
+            <div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">Belum ada data cabang.</div>
+            @endforelse
           </div>
         </div>
 
-        <!-- ANTRIAN PERSETUJUAN -->
+        <!-- STATUS RANTING -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Antrian Persetujuan</span>
-            <a href="{{ url('/superadmin/persetujuan') }}" class="card-link">Lihat Semua</a>
+            <span class="card-title">Status Ranting (Keaktifan)</span>
+            <a href="{{ url('/superadmin/status-ranting') }}" class="card-link">Lihat Semua</a>
           </div>
-          <div style="padding:0;">
-            @php
-            $demoAntrian = [
-              ['nama' => 'Perubahan Takmir Masjid Agung', 'tipe' => 'Cabang',  'status' => 'Menunggu', 'sc' => '#b45309'],
-              ['nama' => 'Pendaftaran Musholla An-Nur',   'tipe' => 'Ranting', 'status' => 'Menunggu', 'sc' => '#b45309'],
-              ['nama' => 'Sertifikat Wakaf AIW',          'tipe' => 'Masjid',  'status' => 'Disetujui','sc' => '#15803d'],
-            ];
-            @endphp
-            @foreach($demoAntrian as $a)
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--gray-100);">
-              <div>
-                <div style="font-size:13px;font-weight:600;color:var(--gray-800);">{{ $a['nama'] }}</div>
-                <div style="font-size:11px;color:var(--gray-400);margin-top:2px;">{{ $a['tipe'] }}</div>
+          <div style="padding:16px 20px;">
+
+            {{-- Visual statistik keaktifan ranting --}}
+            <div class="stat-cards">
+              <div class="stat-card sc-aktif">
+                <div class="stat-card-icon"><i class="ti ti-circle-check"></i></div>
+                <div class="stat-card-num">{{ $rantingAktif ?? 0 }}</div>
+                <div class="stat-card-label">Aktif</div>
               </div>
-              <span style="font-size:11px;font-weight:700;letter-spacing:.04em;color:{{ $a['sc'] }};">{{ strtoupper($a['status']) }}</span>
+              <div class="stat-card sc-kurang">
+                <div class="stat-card-icon"><i class="ti ti-alert-triangle"></i></div>
+                <div class="stat-card-num">{{ $rantingKurang ?? 0 }}</div>
+                <div class="stat-card-label">Kurang Aktif</div>
+              </div>
+              <div class="stat-card sc-vakum">
+                <div class="stat-card-icon"><i class="ti ti-alert-circle"></i></div>
+                <div class="stat-card-num">{{ $rantingVakum ?? 0 }}</div>
+                <div class="stat-card-label">Vakum</div>
+              </div>
             </div>
-            @endforeach
-            <div style="padding:14px 20px;">
-              <a href="{{ url('/superadmin/persetujuan') }}" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1px solid var(--gray-200);border-radius:8px;font-size:13px;font-weight:600;color:var(--gray-600);text-decoration:none;transition:background .15s;">
-                Lihat Semua Pengajuan <i class="ti ti-arrow-right" style="font-size:14px;"></i>
-              </a>
+
+            {{-- Daftar ranting --}}
+            <div style="border:1px solid var(--gray-100);border-radius:10px;overflow:hidden;">
+              @forelse(($daftarRanting ?? []) as $r)
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--gray-100);">
+                <span style="font-size:14px;font-weight:500;color:var(--gray-800);">{{ $r->nama }}</span>
+                <span class="badge {{ $r->badge }}">{{ strtoupper($r->status) }}</span>
+              </div>
+              @empty
+              <div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">Belum ada data ranting.</div>
+              @endforelse
             </div>
+
           </div>
         </div>
 

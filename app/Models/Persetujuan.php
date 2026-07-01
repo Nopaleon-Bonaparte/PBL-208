@@ -13,7 +13,7 @@ class Persetujuan extends Model
     protected $fillable = [
         'id_persetujuan',
         'id_pengajuan',
-        'id_user',
+        'id_user',   // admin cabang pemroses (FK ke user.id_user)
         'status',
         'alasan',
     ];
@@ -25,6 +25,6 @@ class Persetujuan extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id');
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 }
