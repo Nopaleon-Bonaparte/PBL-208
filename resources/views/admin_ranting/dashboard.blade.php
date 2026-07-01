@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -166,5 +166,7 @@
         </div>
     </div>
 
+@include('shared.privilege-notification')
 </body>
 </html>
+
