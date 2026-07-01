@@ -8,21 +8,6 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    /** Skor keaktifan 0-100 dari jumlah hari sejak login terakhir. */
-    private function skorDari($lastLogin): int
-    {
-        if (!$lastLogin) return 0;
-        $hari = (int) Carbon::parse($lastLogin)->diffInDays(Carbon::now());
-        return (int) max(0, min(100, round(100 - ($hari / 90 * 100))));
-    }
-
-    private function statusDari(int $skor): string
-    {
-        if ($skor >= 70) return 'Aktif';
-        if ($skor >= 50) return 'Kurang Aktif';
-        return 'Vakum';
-    }
-
     public function index()
     {
         // ── Statistik umum ──
