@@ -12,8 +12,10 @@ return new class extends Migration
             $table->string('nama_lengkap', 150)->nullable()->after('username');
             $table->string('email', 150)->nullable()->after('nama_lengkap');
             $table->string('no_hp', 20)->nullable()->after('email');
-            $table->string('status_akun', 20)->default('Aktif')->after('id_ranting');
+            $table->string('id_cabang', 10)->nullable()->after('id_ranting');
+            $table->string('status_akun', 20)->default('Aktif')->after('id_cabang');
             $table->dateTime('terakhir_login')->nullable()->after('status_akun');
+            $table->foreign('id_cabang')->references('id_cabang')->on('cabang');
         });
 
         // ── Tambah kolom wilayah ke tabel cabang ──
@@ -41,7 +43,8 @@ return new class extends Migration
         });
 
         Schema::table('user', function (Blueprint $table) {
-            $table->dropColumn(['nama_lengkap', 'email', 'no_hp', 'status_akun', 'terakhir_login']);
+            $table->dropForeign(['id_cabang']);
+            $table->dropColumn(['nama_lengkap', 'email', 'no_hp', 'id_cabang', 'status_akun', 'terakhir_login']);
         });
     }
 };

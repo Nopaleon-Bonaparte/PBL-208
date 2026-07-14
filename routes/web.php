@@ -13,6 +13,7 @@ use App\Http\Controllers\PersetujuanController;
 use App\Http\Controllers\MasjidController;
 use App\Http\Controllers\DataMasjidController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\SettingsController;
 
 // ── Root ──
 Route::get('/', fn() => redirect('/login'));
@@ -44,27 +45,99 @@ Route::prefix('superadmin')->group(function () {
     Route::get('/status-cabang',  [StatusController::class, 'cabang']);
     Route::get('/status-ranting', [StatusController::class, 'ranting']);
 
-    // Data masjid yang SUDAH JADI (read-only) dari seluruh cabang
-    Route::get('/status-masjid',  [DataMasjidController::class, 'superadmin']);
-
-    // Manajemen Akun — buat akun (termasuk untuk cabang/ranting baru), pantau keaktifan
+    // Manajemen Akun — buat akun, hapus akun
     Route::get('/akun-admin',                        [AkunAdminController::class, 'index']);
     Route::post('/akun-admin',                       [AkunAdminController::class, 'store']);
-    Route::post('/akun-admin/{id}/toggle-status',    [AkunAdminController::class, 'toggleStatus']);
-    Route::post('/akun-admin/{id}/reset-password',   [AkunAdminController::class, 'resetPassword']);
-
-    // Tambah cabang / ranting baru (hanya superadmin)
-    Route::post('/cabang',  [AkunAdminController::class, 'storeCabang']);
-    Route::post('/ranting', [AkunAdminController::class, 'storeRanting']);
+    Route::post('/akun-admin/{id}/delete',           [AkunAdminController::class, 'destroy']);
+    Route::get('/settings',                          [SettingsController::class, 'superadminIndex']);
 });
+
+Route::post('/settings/save', [SettingsController::class, 'save'])->name('settings.save');
 
 // ── ADMIN CABANG / PCM (R01) ──
 Route::prefix('pcm')->group(function () {
-    Route::get('/membership',    fn() => session('id_role') == 'R01' ? view('admin_cabang.membership')      : redirect('/dashboard'));
-    Route::get('/sub-branches',  [DataMasjidController::class, 'cabang']);
-    Route::get('/legal-status',  fn() => session('id_role') == 'R01' ? view('admin_cabang.legalitas-masjid'): redirect('/dashboard'));
+    Route::get('/membership', function () {
+        if (session('id_role') != 'R01') return redirect('/dashboard');
+
+        $idCabang   = session('id_cabang');
+        $rantingIds = DB::table('ranting')->where('id_cabang', $idCabang)->pluck('id_ranting')->all();
+
+        // Statistik ringkasan
+        $totalMasjid  = DB::table('masjid')->whereIn('id_ranting', $rantingIds)->where('status_data','approved')->count();
+        $masjidWakaf  = DB::table('masjid')->whereIn('id_ranting', $rantingIds)->where('status_data','approved')->where('status_tanah','Tanah Wakaf')->count();
+        $totalRanting = count($rantingIds);
+        $totalPending = DB::table('pengajuan')
+            ->join('masjid','pengajuan.id_masjid','=','masjid.id_masjid')
+            ->where('pengajuan.status','pending')
+            ->whereIn('masjid.id_ranting', $rantingIds)
+            ->count();
+
+        // Antrian persetujuan (pending, terbaru)
+        $antrian = DB::table('pengajuan')
+            ->join('masjid','pengajuan.id_masjid','=','masjid.id_masjid')
+            ->leftJoin('ranting','masjid.id_ranting','=','ranting.id_ranting')
+            ->where('pengajuan.status','pending')
+            ->whereIn('masjid.id_ranting', $rantingIds)
+            ->select('pengajuan.id_pengajuan','pengajuan.jenis_pengajuan','pengajuan.created_at',
+                     'masjid.nama_masjid','ranting.nama_ranting')
+            ->orderBy('pengajuan.created_at','desc')
+            ->limit(6)
+            ->get();
+
+        // Masjid baru terdaftar (approved, terbaru)
+        $masjidBaru = DB::table('masjid')
+            ->leftJoin('ranting','masjid.id_ranting','=','ranting.id_ranting')
+            ->where('masjid.status_data','approved')
+            ->whereIn('masjid.id_ranting', $rantingIds)
+            ->select('masjid.id_masjid','masjid.nama_masjid','masjid.tipe','masjid.kecamatan','ranting.nama_ranting')
+            ->orderBy('masjid.id_masjid','desc')
+            ->limit(6)
+            ->get();
+
+        return view('admin_cabang.membership', compact(
+            'totalMasjid','masjidWakaf','totalRanting','totalPending','antrian','masjidBaru'
+        ));
+    });
+    Route::get('/sub-branches',  fn() => redirect('/pcm/legal-status'));
+    Route::get('/legal-status', function () {
+        if (session('id_role') != 'R01') return redirect('/dashboard');
+
+        $idCabang   = session('id_cabang');
+        $rantingIds = DB::table('ranting')->where('id_cabang', $idCabang)->pluck('id_ranting')->all();
+
+        // Data masjid yang sudah approved
+        $daftarMasjid = DB::table('masjid')
+            ->leftJoin('ranting','masjid.id_ranting','=','ranting.id_ranting')
+            ->where('masjid.status_data','approved')
+            ->whereIn('masjid.id_ranting', $rantingIds)
+            ->select(
+                'masjid.id_masjid','masjid.nama_masjid','masjid.tipe','masjid.alamat',
+                'masjid.kecamatan','masjid.kelurahan','masjid.kapasitas as kapasitas_jamaah',
+                'masjid.status_tanah as status_wakaf','masjid.no_sertifikat as nomor_sertifikat',
+                'ranting.nama_ranting'
+            )
+            ->orderBy('masjid.nama_masjid')
+            ->get()
+            ->map(function($m) {
+                // Hitung jumlah inventaris & takmir dari tabel terkait
+                $m->jumlah_inventaris = DB::table('inventaris')->where('id_masjid',$m->id_masjid)->count();
+                $m->jumlah_takmir     = DB::table('takmir')->where('id_masjid',$m->id_masjid)->count();
+                $m->kelengkapan_data  = 100; // cabang hanya view, anggap data sudah lengkap jika approved
+                return $m;
+            });
+
+        // Statistik ringkasan
+        $totalMasjid       = $daftarMasjid->count();
+        $totalJenisM       = $daftarMasjid->where('tipe','Masjid')->count();
+        $totalJenisMu      = $daftarMasjid->where('tipe','Musholla')->count();
+        $totalBelumLengkap = 0; // semua approved dianggap lengkap di sisi cabang
+
+        return view('admin_cabang.legalitas-masjid', compact(
+            'daftarMasjid','totalMasjid','totalJenisM','totalJenisMu','totalBelumLengkap'
+        ));
+    });
     Route::get('/ranting-status',fn() => session('id_role') == 'R01' ? view('admin_cabang.status-ranting')  : redirect('/dashboard'));
-    Route::get('/settings',      fn() => session('id_role') == 'R01' ? view('admin_cabang.settings')        : redirect('/dashboard'));
+    Route::get('/settings',      [SettingsController::class, 'cabangIndex']);
 
     // Admin cabang dapat mengedit data masjid yang sudah ada (perubahan langsung diterapkan)
     Route::get('/edit-masjid/{id}',  [MasjidController::class, 'editCabang']);
@@ -102,9 +175,9 @@ Route::prefix('prm')->group(function () {
         ));
     });
     Route::get('/data-masjid',   [DataMasjidController::class, 'ranting']);
-    Route::get('/legalitas',     fn() => session('id_role') == 'R03' ? view('admin_ranting.legalitas-masjid'): redirect('/dashboard'));
+    Route::get('/legalitas',     [DataMasjidController::class, 'legalitas']);
     Route::get('/status-ranting',fn() => session('id_role') == 'R03' ? view('admin_ranting.status-ranting')  : redirect('/dashboard'));
-    Route::get('/settings',      fn() => session('id_role') == 'R03' ? view('admin_ranting.settings')        : redirect('/dashboard'));
+    Route::get('/settings',      [SettingsController::class, 'rantingIndex']);
 
     // CRUD Masjid oleh Admin Ranting
     Route::get('/tambah-masjid',     [MasjidController::class, 'create']);
@@ -140,7 +213,7 @@ Route::prefix('masjid')->group(function () {
         
         return view('pengurus_masjid.Informasi', compact('masjid', 'inventaris', 'takmir', 'legalitas', 'pengajuan'));
     });
-    Route::get('/settings',  fn() => session('id_role') == 'R02' ? view('pengurus_masjid.Settings')  : redirect('/dashboard'));
+    Route::get('/settings',  [SettingsController::class, 'masjidIndex']);
 
     // Pengurus masjid mengedit data masjidnya → masuk antrian persetujuan cabang
     Route::get('/edit-masjid/{id}',  [MasjidController::class, 'edit']);
@@ -166,4 +239,17 @@ Route::prefix('masjid')->group(function () {
     // Pengajuan
     Route::get('/pengajuan',            [PengajuanController::class, 'index']);
     Route::post('/pengajuan',           [PengajuanController::class, 'store']);
+
+    // Simpan koordinat peta masjid
+    Route::post('/simpan-koordinat', function (\Illuminate\Http\Request $req) {
+        if (session('id_role') != 'R02') return response()->json(['ok' => false, 'msg' => 'Unauthorized'], 403);
+        $req->validate(['lat' => 'required|numeric', 'lng' => 'required|numeric']);
+        $id = session('id_masjid');
+        if (!$id) return response()->json(['ok' => false, 'msg' => 'Masjid tidak ditemukan'], 404);
+        DB::table('masjid')->where('id_masjid', $id)->update([
+            'latitude'  => $req->lat,
+            'longitude' => $req->lng,
+        ]);
+        return response()->json(['ok' => true]);
+    });
 });

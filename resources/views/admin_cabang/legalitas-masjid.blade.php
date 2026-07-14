@@ -333,236 +333,25 @@
           </div>
         </div>
         @empty
-
-        {{-- DATA DEMO: Masjid & Musholla di Kecamatan Batam Kota --}}
-
-        <div class="masjid-card" data-nama="masjid agung batam" data-jamaah="2.500" data-inventaris-list="Sound system|Karpet 500m²|AC 10 unit|CCTV 8 titik|Genset|Kipas angin 20 unit" data-takmir-list="Ustadz H. Mahmud|Ahmad Fauzi|Rahmat Hidayat|Budi Santoso|Hendra Wijaya" data-wakaf-status="Wakaf" data-sertifikat="AIW/001/BATAM/2010" data-tipe="masjid" data-wakaf="wakaf" data-data="lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon"><i class="ti ti-building-mosque"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Masjid Agung Batam</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-masjid">MASJID</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Belian, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-wakaf">WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">2.500</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">76 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">25</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt ok">Data Lengkap</span>
-          </div>
+        <div style="grid-column:1/-1;padding:48px 20px;text-align:center;color:#9ca3af;">
+          <i class="ti ti-building-mosque" style="font-size:48px;display:block;margin-bottom:12px;color:#d1d5db;"></i>
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Belum ada masjid terdaftar</div>
+          <div style="font-size:13px;">Data masjid yang disetujui akan muncul di sini.</div>
         </div>
-
-        <div class="masjid-card" data-nama="masjid al-falah sukajadi" data-jamaah="750" data-inventaris-list="Sound system|Karpet 200m²|AC 4 unit|Kipas angin 10 unit" data-takmir-list="H. Abdullah|Syaiful Anwar|Ridwan" data-wakaf-status="Wakaf" data-sertifikat="AIW/002/BATAM/2012" data-tipe="masjid" data-wakaf="wakaf" data-data="lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon"><i class="ti ti-building-mosque"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Masjid Al-Falah Sukajadi</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-masjid">MASJID</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Sukajadi, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-wakaf">WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">750</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">44 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">14</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt ok">Data Lengkap</span>
-          </div>
-        </div>
-
-        <div class="masjid-card" data-nama="masjid ar-raudhah baloi" data-jamaah="600" data-inventaris-list="Sound system|Karpet 150m²|Kipas angin 8 unit|Genset" data-takmir-list="H. Zainal Abidin|Irfan|Dedi Kurniawan" data-wakaf-status="Wakaf" data-sertifikat="AIW/003/BATAM/2013" data-tipe="masjid" data-wakaf="wakaf" data-data="lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon"><i class="ti ti-building-mosque"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Masjid Ar-Raudhah Baloi</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-masjid">MASJID</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Baloi Permai, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-wakaf">WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">600</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">38 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">12</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt ok">Data Lengkap</span>
-          </div>
-        </div>
-
-        <div class="masjid-card" data-nama="masjid nurul huda sungai panas" data-jamaah="480" data-inventaris-list="Sound system|Karpet 120m²|AC 2 unit|Kipas angin 6 unit" data-takmir-list="H. Nasir|Rudi Hartono|Faisal" data-wakaf-status="Wakaf" data-sertifikat="AIW/004/BATAM/2014" data-tipe="masjid" data-wakaf="wakaf" data-data="lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon"><i class="ti ti-building-mosque"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Masjid Nurul Huda Sungai Panas</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-masjid">MASJID</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Sungai Panas, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-wakaf">WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">480</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">31 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">11</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt ok">Data Lengkap</span>
-          </div>
-        </div>
-
-        <div class="masjid-card incomplete" data-nama="masjid al-ikhlas teluk tering" data-jamaah="320" data-inventaris-list="Sound system|Karpet 80m²|Kipas angin 4 unit" data-takmir-list="Muslimin|Arif Rahman|Teguh" data-wakaf-status="Proses Wakaf" data-sertifikat="Dalam Proses" data-tipe="masjid" data-wakaf="proses-wakaf" data-data="belum-lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon"><i class="ti ti-building-mosque"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Masjid Al-Ikhlas Teluk Tering</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-masjid">MASJID</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Teluk Tering, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-proses">PROSES WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">320</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">22 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">9</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt warn">Lengkapi 70%</span>
-          </div>
-        </div>
-
-        <div class="masjid-card" data-nama="masjid istiqomah belian" data-jamaah="410" data-inventaris-list="Sound system|Karpet 100m²|AC 2 unit" data-takmir-list="H. Samsul|Wahyu|Andi Pratama" data-wakaf-status="Wakaf" data-sertifikat="AIW/006/BATAM/2015" data-tipe="masjid" data-wakaf="wakaf" data-data="lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon"><i class="ti ti-building-mosque"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Masjid Istiqomah Belian</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-masjid">MASJID</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Belian, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-wakaf">WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">410</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">28 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">10</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt ok">Data Lengkap</span>
-          </div>
-        </div>
-
-        <div class="masjid-card incomplete" data-nama="musholla an-nur baloi" data-jamaah="90" data-inventaris-list="Sound system kecil|Karpet 40m²|Kipas angin 2 unit" data-takmir-list="Pak Darman|Suhardi" data-wakaf-status="Proses Wakaf" data-sertifikat="Dalam Proses" data-tipe="musholla" data-wakaf="proses-wakaf" data-data="belum-lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon musholla"><i class="ti ti-home"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Musholla An-Nur Baloi</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-musholla">MUSHOLLA</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Baloi Permai, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-proses">PROSES WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">90</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">8 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">4</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt warn">Lengkapi 65%</span>
-          </div>
-        </div>
-
-        <div class="masjid-card incomplete" data-nama="musholla al-hikmah sukajadi" data-jamaah="60" data-inventaris-list="Karpet 20m²|Kipas angin 2 unit" data-takmir-list="Pak Sulaiman|Hendri" data-wakaf-status="Belum Wakaf" data-sertifikat="-" data-tipe="musholla" data-wakaf="belum-wakaf" data-data="belum-lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon musholla"><i class="ti ti-home"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Musholla Al-Hikmah Sukajadi</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-musholla">MUSHOLLA</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Sukajadi, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-belum">BELUM WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">60</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">5 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">3</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt warn">Lengkapi 55%</span>
-          </div>
-        </div>
-
-        <div class="masjid-card" data-nama="masjid baitul makmur sungai panas" data-jamaah="370" data-inventaris-list="Sound system|Karpet 90m²|AC 1 unit|Kipas angin 5 unit" data-takmir-list="H. Karman|Slamet|Purwanto" data-wakaf-status="Wakaf" data-sertifikat="AIW/008/BATAM/2016" data-tipe="masjid" data-wakaf="wakaf" data-data="lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon"><i class="ti ti-building-mosque"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Masjid Baitul Makmur Sungai Panas</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-masjid">MASJID</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Sungai Panas, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-wakaf">WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">370</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">26 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">10</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt ok">Data Lengkap</span>
-          </div>
-        </div>
-
-        <div class="masjid-card incomplete" data-nama="musholla baiturrahman teluk tering" data-jamaah="70" data-inventaris-list="Karpet 30m²|Kipas angin 2 unit" data-takmir-list="Pak Robi|Darmawan" data-wakaf-status="Belum Wakaf" data-sertifikat="-" data-tipe="musholla" data-wakaf="belum-wakaf" data-data="belum-lengkap">
-          <div class="masjid-card-head">
-            <div class="masjid-card-icon musholla"><i class="ti ti-home"></i></div>
-            <div style="flex:1;min-width:0;">
-              <div class="masjid-card-title">Musholla Baiturrahman Teluk Tering</div>
-              <div class="masjid-card-badges"><span class="masjid-type-badge type-musholla">MUSHOLLA</span></div>
-              <div class="masjid-loc"><i class="ti ti-map-pin"></i> Kel. Teluk Tering, Batam Kota</div>
-            </div>
-            <span class="status-badge sb-belum">BELUM WAKAF</span>
-          </div>
-          <div class="masjid-stats">
-            <div class="masjid-stat-item"><div class="msi-lbl">Jamaah</div><div class="msi-val">70</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Inventaris</div><div class="msi-val">6 Item</div></div>
-            <div class="masjid-stat-item"><div class="msi-lbl">Takmir</div><div class="msi-val">3</div></div>
-          </div>
-          <div class="masjid-card-footer">
-            <div class="masjid-actions"><a class="masjid-action-link detail-btn">Detail</a></div>
-            <span class="completeness-txt warn">Lengkapi 50%</span>
-          </div>
-        </div>
-
         @endforelse
 
       </div><!-- /masjid-grid -->
 
-      <!-- PAGINATION -->
+      <!-- INFO COUNT -->
       <div class="pagination-wrap">
-        <span>Menampilkan 1-10 dari {{ $totalMasjid ?? 10 }} Masjid/Musholla Kec. Batam Kota</span>
-        <div class="pagination-pages">
-          <button class="page-btn arrow">‹</button>
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
-          <button class="page-btn arrow">›</button>
-        </div>
+        <span>Menampilkan {{ $daftarMasjid->count() }} Masjid/Musholla yang sudah disetujui</span>
       </div>
 
+
     </main>
+  </div>
+</div>
+
   </div>
 </div>
 

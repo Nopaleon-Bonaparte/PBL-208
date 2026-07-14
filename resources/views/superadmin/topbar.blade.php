@@ -88,7 +88,6 @@
             'persetujuan'    => 'Antrian Persetujuan',
             'status-cabang'  => 'Status Cabang',
             'status-ranting' => 'Status Ranting',
-            'status-masjid'  => 'Status Masjid',
             'akun-admin'     => 'Manajemen Akun',
           ];
           echo $saNavLabels[$activeTopLink ?? ''] ?? 'Dashboard';
@@ -99,7 +98,7 @@
 
   {{-- RIGHT: icons + avatar --}}
   <div class="topbar-right">
-    <a href="{{ url('/superadmin/status-cabang') }}" class="tb-icon-btn"><i class="ti ti-settings"></i></a>
+    <a href="{{ url('/superadmin/settings') }}" class="tb-icon-btn"><i class="ti ti-settings"></i></a>
     <div class="tb-divider"></div>
     <div class="tb-profile-wrap" id="saProfileWrap">
       <button class="tb-avatar" onclick="toggleSaProfile(event)">
@@ -121,10 +120,10 @@
           </div>
         </div>
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f3f4f6;">
-          <form action="{{ route('logout') }}" method="POST">
+          <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari sistem?');">
             @csrf
             <button type="submit" style="width:100%;padding:8px;background:#1e6b3f;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">
-              Logout
+              Keluar
             </button>
           </form>
         </div>

@@ -390,10 +390,115 @@ body { font-family: 'Inter', sans-serif; }
 
             <div class="info-card">
               <h3>Lokasi / Wilayah</h3>
-              <div class="map-placeholder">
-                <div class="map-pin"><i class="ti ti-map-pin-filled"></i></div>
-                <span>{{ $masjid->wilayah ?? 'Kota Batam' }}</span>
+
+              {{-- Leaflet CSS --}}
+              <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+              <div id="masjidMap" style="height:280px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;margin-top:4px;"></div>
+
+              <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <span id="coordLabel" style="font-size:12px;color:#6b7280;">
+                  @if($masjid->latitude && $masjid->longitude)
+                    📍 {{ number_format($masjid->latitude,6) }}, {{ number_format($masjid->longitude,6) }}
+                  @else
+                    📍 Belum ada koordinat — geser pin untuk menetapkan lokasi
+                  @endif
+                </span>
+                <button id="saveCoordBtn" onclick="saveCoordinates()" style="display:none;padding:5px 14px;background:#1e6b3f;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">
+                  💾 Simpan Lokasi
+                </button>
+                <span id="saveCoordStatus" style="font-size:12px;"></span>
               </div>
+
+              {{-- Leaflet JS --}}
+              <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+              <script>
+              (function(){
+                const savedLat  = {{ $masjid->latitude  ?? 'null' }};
+                const savedLng  = {{ $masjid->longitude ?? 'null' }};
+                const alamat    = "{{ addslashes($masjid->alamat ?? '') }}";
+                const kecamatan = "{{ addslashes($masjid->kecamatan ?? '') }}";
+                const wilayah   = "{{ addslashes($masjid->wilayah ?? 'Kota Batam') }}";
+                const csrfToken = "{{ csrf_token() }}";
+
+                // Default: tengah Batam
+                const BATAM_CENTER = [1.1301, 104.0529];
+                let currentLat = savedLat ?? BATAM_CENTER[0];
+                let currentLng = savedLng ?? BATAM_CENTER[1];
+
+                const map = L.map('masjidMap').setView([currentLat, currentLng], savedLat ? 16 : 12);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+                  maxZoom: 19
+                }).addTo(map);
+
+                const greenIcon = L.divIcon({
+                  html: '<div style="background:#1e6b3f;width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);"></div>',
+                  iconSize: [18, 18], iconAnchor: [9, 9], className: ''
+                });
+
+                let marker = L.marker([currentLat, currentLng], {
+                  draggable: true, icon: greenIcon
+                }).addTo(map);
+
+                marker.bindPopup('<b>{{ addslashes($masjid->nama_masjid) }}</b><br>Geser pin untuk mengubah lokasi').openPopup();
+
+                marker.on('dragend', function(e){
+                  const pos = e.target.getLatLng();
+                  currentLat = pos.lat.toFixed(7);
+                  currentLng = pos.lng.toFixed(7);
+                  document.getElementById('coordLabel').innerText = '📍 ' + currentLat + ', ' + currentLng + ' (belum disimpan)';
+                  document.getElementById('saveCoordBtn').style.display = 'inline-block';
+                  document.getElementById('saveCoordStatus').innerText = '';
+                });
+
+                // Jika belum ada koordinat, geocode alamat lewat Nominatim (gratis)
+                if (!savedLat) {
+                  const query = [alamat, kecamatan, 'Batam', 'Indonesia'].filter(Boolean).join(', ');
+                  fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1')
+                    .then(r => r.json())
+                    .then(data => {
+                      if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lng = parseFloat(data[0].lon);
+                        map.setView([lat, lng], 16);
+                        marker.setLatLng([lat, lng]);
+                        currentLat = lat.toFixed(7);
+                        currentLng = lng.toFixed(7);
+                        document.getElementById('coordLabel').innerText = '📍 ' + currentLat + ', ' + currentLng + ' (hasil pencarian — geser untuk sesuaikan)';
+                        document.getElementById('saveCoordBtn').style.display = 'inline-block';
+                      }
+                    }).catch(() => {});
+                }
+
+                window.saveCoordinates = function() {
+                  const btn = document.getElementById('saveCoordBtn');
+                  const status = document.getElementById('saveCoordStatus');
+                  btn.disabled = true;
+                  btn.innerText = 'Menyimpan…';
+                  fetch('/masjid/simpan-koordinat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    body: JSON.stringify({ lat: currentLat, lng: currentLng })
+                  }).then(r => r.json()).then(data => {
+                    if (data.ok) {
+                      status.innerHTML = '<span style="color:#15803d;font-weight:600;">✓ Lokasi berhasil disimpan</span>';
+                      btn.style.display = 'none';
+                      document.getElementById('coordLabel').innerText = '📍 ' + currentLat + ', ' + currentLng;
+                    } else {
+                      status.innerHTML = '<span style="color:#b91c1c;">Gagal menyimpan</span>';
+                    }
+                    btn.disabled = false;
+                    btn.innerText = '💾 Simpan Lokasi';
+                  }).catch(() => {
+                    status.innerHTML = '<span style="color:#b91c1c;">Gagal menyimpan</span>';
+                    btn.disabled = false;
+                    btn.innerText = '💾 Simpan Lokasi';
+                  });
+                };
+              })();
+              </script>
             </div>
           </div>
 

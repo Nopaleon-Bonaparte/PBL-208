@@ -88,8 +88,10 @@ class PersetujuanController extends Controller
                 $allowed = [
                     'nama_masjid', 'tipe', 'alamat', 'wilayah', 'kecamatan', 'kelurahan',
                     'kapasitas', 'no_sk', 'status_tanah', 'jenis_sertifikat', 'no_sertifikat',
-                    'nama_nazir', 'sound_system', 'jumlah_ac', 'alat_kebersihan', 'sarana_lainnya',
+                    'nama_nazir', 'sound_system', 'jumlah_sound_system', 'jumlah_ac', 'kondisi_ac', 'alat_kebersihan', 'sarana_lainnya',
                     'takmir_nama', 'takmir_nik', 'takmir_wa', 'kontak_pengurus', 'status_legalitas',
+                    'foto_bangunan', 'file_sk', 'file_sertifikat', 'file_ktp',
+                    'default_username', 'default_password', 'email',
                 ];
                 $update = array_intersect_key($data, array_flip($allowed));
                 $update['status_data'] = 'approved';

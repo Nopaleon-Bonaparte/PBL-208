@@ -47,9 +47,7 @@ class StatusController extends Controller
         if (session('id_role') != 'R99') return redirect('/dashboard');
 
         $rows = DB::table('ranting')
-            ->leftJoin('user', function ($j) {
-                $j->on('user.id_ranting', '=', 'ranting.id_ranting');
-            })
+            ->join('user', 'user.id_ranting', '=', 'ranting.id_ranting')
             ->select(
                 'ranting.id_ranting',
                 'ranting.nama_ranting',
@@ -77,21 +75,33 @@ class StatusController extends Controller
     {
         if (session('id_role') != 'R99') return redirect('/dashboard');
 
-        // login terakhir per cabang = login terbaru semua user di ranting bawah cabang.
+        // login terakhir per cabang = login terbaru semua user di ranting bawah cabang ATAU user admin cabang langsung.
         $rows = DB::table('cabang')
             ->leftJoin('ranting', 'ranting.id_cabang', '=', 'cabang.id_cabang')
-            ->leftJoin('user', 'user.id_ranting', '=', 'ranting.id_ranting')
+            ->leftJoin('user as u_ranting', 'u_ranting.id_ranting', '=', 'ranting.id_ranting')
+            ->leftJoin('user as u_cabang', 'u_cabang.id_cabang', '=', 'cabang.id_cabang')
+            ->where(function ($q) {
+                $q->whereNotNull('u_ranting.id_user')
+                  ->orWhereNotNull('u_cabang.id_user');
+            })
             ->select(
                 'cabang.id_cabang',
                 'cabang.nama_cabang',
-                DB::raw('MAX(user.terakhir_login) as last_login')
+                DB::raw('MAX(u_ranting.terakhir_login) as last_login_r'),
+                DB::raw('MAX(u_cabang.terakhir_login) as last_login_c')
             )
             ->groupBy('cabang.id_cabang', 'cabang.nama_cabang')
             ->orderBy('cabang.nama_cabang')
             ->get();
 
         $daftar = $rows->map(function ($r) {
-            $h = $this->hitung($r->last_login);
+            $last_login = null;
+            if ($r->last_login_r && $r->last_login_c) {
+                $last_login = max($r->last_login_r, $r->last_login_c);
+            } else {
+                $last_login = $r->last_login_r ?: $r->last_login_c;
+            }
+            $h = $this->hitung($last_login);
             return (object) [
                 'nama'             => $r->nama_cabang,
                 'laporan_terakhir' => $h['teks'],

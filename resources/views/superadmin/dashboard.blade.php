@@ -10,21 +10,38 @@
 <style>
 body { font-family: 'Inter', sans-serif; }
 
-/* ── CARD SHAKE ── */
-.sa-stat-card {
+/* ── STAT & CHART CARD PRESS EFFECT ── */
+.sa-stat-card, .card, .chart-card {
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.15s ease, background 0.15s ease,
+              border-color 0.15s ease, box-shadow 0.15s ease;
   user-select: none;
   overflow: visible !important;
 }
-.sa-stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(30,107,63,.13);
-  border-color: #6ee7a0;
+.sa-stat-card:hover, .card:hover, .chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30,107,63,.12);
+  border-color: var(--green-300);
 }
+.sa-stat-card:active, .card:active, .chart-card:active {
+  animation: card-shake 0.3s ease;
+  background: var(--green-50);
+  border-color: var(--green-400);
+  box-shadow: 0 2px 8px rgba(30,107,63,.15);
+}
+@keyframes card-shake {
+  0%   { transform: rotate(0deg) scale(1); }
+  20%  { transform: rotate(-1.5deg) scale(0.98); }
+  40%  { transform: rotate(1.5deg) scale(0.98); }
+  60%  { transform: rotate(-1deg) scale(0.99); }
+  80%  { transform: rotate(0.8deg) scale(0.99); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+.sa-stat-card.urgent:hover  { border-color: var(--gold); box-shadow: 0 6px 16px rgba(184,148,42,.15); }
+.sa-stat-card.urgent:active { background: #fef9e7; border-color: var(--gold-light); }
 
-/* ── Kartu atas lebih ringkas agar 4 muat 1 baris ── */
-.stat-cards { grid-template-columns: repeat(4, 1fr) !important; gap: 14px !important; }
+/* ── Kartu atas lebih ringkas agar 2 muat 1 baris ── */
+.stat-cards { grid-template-columns: repeat(2, 1fr) !important; gap: 14px !important; }
 .sa-stat-card { padding: 14px 16px !important; }
 .sa-stat-card .stat-value { font-size: 24px; }
 .sa-stat-card .stat-card-icon { width: 34px; height: 34px; }
@@ -112,15 +129,6 @@ body { font-family: 'Inter', sans-serif; }
 
         <div class="stat-card sa-stat-card">
           <div class="stat-card-top">
-            <div class="stat-card-icon"><i class="ti ti-users-group"></i></div>
-            <span class="stat-pill pill-green">+20 Bulan Ini</span>
-          </div>
-          <div class="stat-label">Total Anggota</div>
-          <div class="stat-value">{{ number_format($total_user ?? 100) }}</div>
-        </div>
-
-        <div class="stat-card sa-stat-card">
-          <div class="stat-card-top">
             <div class="stat-card-icon"><i class="ti ti-building-community"></i></div>
             <span class="stat-pill pill-blue">{{ $total_cabang ?? 12 }} Aktif</span>
           </div>
@@ -137,40 +145,31 @@ body { font-family: 'Inter', sans-serif; }
           <div class="stat-value">{{ $total_ranting ?? 36 }}</div>
         </div>
 
-        <div class="stat-card sa-stat-card urgent">
-          <div class="stat-card-top">
-            <div class="stat-card-icon"><i class="ti ti-clipboard-list"></i></div>
-            <span class="stat-pill pill-amber">Penting</span>
-          </div>
-          <div class="stat-label">Pengajuan Pending</div>
-          <div class="stat-value">{{ $pengajuan_pending ?? 0 }}</div>
-        </div>
-
       </div>
 
       <!-- ROW: CHARTS (Trend Masjid + Status Wakaf) -->
       <div class="grid-2" style="margin-bottom:20px;">
 
-        <!-- TREND PENAMBAHAN MASJID -->
+        <!-- TREND PENAMBAHAN RANTING -->
         <div class="chart-card" id="trendCard">
-          <div class="chart-title">Trend Penambahan Masjid</div>
-          <div class="chart-big">{{ $total_masjid ?? 0 }}</div>
-          <div class="chart-delta"><i class="ti ti-trending-up"></i> +2 masjid dari tahun lalu</div>
+          <div class="chart-title">Trend Penambahan Ranting</div>
+          <div class="chart-big">{{ $total_ranting ?? 0 }}</div>
+          <div class="chart-delta"><i class="ti ti-trending-up"></i> +1 ranting dari tahun lalu</div>
           <div class="chart-tip" id="trendTip"></div>
           <svg viewBox="0 0 480 220" width="100%" height="200" preserveAspectRatio="xMidYMid meet" id="trendSvg">
             @php
-              $maxT = max($trenNilai ?: [1]); $maxT = $maxT < 5 ? 25 : ceil($maxT/5)*5;
-              $n = count($trenNilai); $bw = 40; $gap = (480 - 40 - $n*$bw) / max($n-1,1); $x0 = 30;
+              $maxT = max($trenRanting ?: [1]); $maxT = $maxT < 5 ? 25 : ceil($maxT/5)*5;
+              $n = count($trenRanting); $bw = 40; $gap = (480 - 40 - $n*$bw) / max($n-1,1); $x0 = 30;
             @endphp
             @for($i=0;$i<=5;$i++)
               @php $gy = 20 + (170*($i/5)); $val = round($maxT*(1-$i/5)); @endphp
               <line x1="30" y1="{{ $gy }}" x2="470" y2="{{ $gy }}" stroke="#eef0f2" stroke-width="1"/>
               <text x="24" y="{{ $gy+4 }}" text-anchor="end" font-size="9" fill="#9ca3af">{{ $val }}</text>
             @endfor
-            @foreach($trenNilai as $k => $v)
+            @foreach($trenRanting as $k => $v)
               @php
-                $h = 170 * ($v / $maxT); $x = $x0 + $k*($bw+$gap); $y = 20 + (170 - $h);
-                $last = $k === $n-1;
+                 $h = 170 * ($v / $maxT); $x = $x0 + $k*($bw+$gap); $y = 20 + (170 - $h);
+                 $last = $k === $n-1;
               @endphp
               <rect class="bar-el" x="{{ $x }}" y="{{ $y }}" width="{{ $bw }}" height="{{ $h }}" rx="4"
                     fill="{{ $last ? '#1e6b3f' : '#c7e3d2' }}"/>
@@ -184,20 +183,31 @@ body { font-family: 'Inter', sans-serif; }
           <div class="chart-foot">Data per tahun · Kota Batam</div>
         </div>
 
-        <!-- STATUS WAKAF MASJID -->
+        <!-- TREND PENAMBAHAN CABANG -->
         <div class="chart-card" id="wakafCard">
-          <div class="chart-title">Status Wakaf Masjid</div>
-          <div class="chart-big">{{ $masjid_terdaftar ?? 0 }} Terdaftar</div>
-          <div class="chart-delta"><i class="ti ti-trending-up"></i> +20.5% dari bulan lalu</div>
+          <div class="chart-title">Trend Penambahan Cabang</div>
+          <div class="chart-big">{{ $total_cabang ?? 0 }} Cabang</div>
+          <div class="chart-delta"><i class="ti ti-trending-up"></i> +10% dari bulan lalu</div>
           <div class="chart-tip" id="wakafTip"></div>
           <svg viewBox="0 0 480 220" width="100%" height="200" preserveAspectRatio="xMidYMid meet" id="wakafSvg">
             @php
-              $wak = [10,10,11,11,12,13,13,14,15,15,16,17];
+              $wak = $trenCabang ?: [1];
               $bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-              $wmin=8; $wmax=20; $wn=count($wak); $wx0=34; $wstep=(470-$wx0)/($wn-1);
-              $pts=''; $area="{$wx0},190 ";
-              foreach($wak as $i=>$v){ $px=$wx0+$i*$wstep; $py=20+170*(1-(($v-$wmin)/($wmax-$wmin))); $pts.="{$px},{$py} "; $area.="{$px},{$py} "; }
-              $area.=(($wx0+($wn-1)*$wstep)).',190';
+              $wmin = min($wak) > 0 ? min($wak) - 1 : 0;
+              $wmax = max($wak) + 1;
+              if ($wmax <= $wmin) $wmax = $wmin + 5;
+              $wn = count($wak);
+              $wx0 = 34;
+              $wstep = (470-$wx0)/max($wn-1,1);
+              $pts = '';
+              $area = "{$wx0},190 ";
+              foreach($wak as $i=>$v){
+                  $px = $wx0+$i*$wstep;
+                  $py = 20+170*(1-(($v-$wmin)/($wmax-$wmin)));
+                  $pts .= "{$px},{$py} ";
+                  $area .= "{$px},{$py} ";
+              }
+              $area .= (($wx0+($wn-1)*$wstep)).',190';
             @endphp
             @for($i=0;$i<=3;$i++)
               @php $gy=20+(170*($i/3)); $val=round($wmax-($wmax-$wmin)*($i/3)); @endphp
@@ -216,7 +226,7 @@ body { font-family: 'Inter', sans-serif; }
               <text x="{{ $px }}" y="210" text-anchor="middle" font-size="8.5" fill="#9ca3af">{{ $bulan[$i] }}</text>
             @endforeach
           </svg>
-          <div class="chart-foot">Akumulasi wakaf · Kota Batam</div>
+          <div class="chart-foot">Data per bulan · Kota Batam</div>
         </div>
 
       </div>
@@ -271,22 +281,6 @@ body { font-family: 'Inter', sans-serif; }
 </div>
 
 <script>
-function applyShake(el) {
-  el.style.background = '#d6f0e0';
-  el.style.borderColor = '#2d8a55';
-  const frames = [
-    {transform:'translateX(0px)'},{transform:'translateX(-6px)'},
-    {transform:'translateX(6px)'},{transform:'translateX(-5px)'},
-    {transform:'translateX(5px)'},{transform:'translateX(-3px)'},
-    {transform:'translateX(3px)'},{transform:'translateX(0px)'},
-  ];
-  const anim = el.animate(frames, {duration:450, easing:'ease-in-out'});
-  anim.onfinish = () => { el.style.background=''; el.style.borderColor=''; };
-}
-document.querySelectorAll('.sa-stat-card, .card, .chart-card').forEach(c => {
-  c.addEventListener('mousedown', () => applyShake(c));
-});
-
 // ── Tooltip interaktif untuk chart (hover & touch) ──
 function setupChart(svgId, tipId, cardId, unit) {
   const svg  = document.getElementById(svgId);
@@ -318,8 +312,8 @@ function setupChart(svgId, tipId, cardId, unit) {
     hit.addEventListener('touchend', () => setTimeout(hideTip, 1200));
   });
 }
-setupChart('trendSvg', 'trendTip', 'trendCard', 'masjid');
-setupChart('wakafSvg', 'wakafTip', 'wakafCard', 'terdaftar');
+setupChart('trendSvg', 'trendTip', 'trendCard', 'Ranting');
+setupChart('wakafSvg', 'wakafTip', 'wakafCard', 'Cabang');
 </script>
 </body>
 </html>

@@ -69,12 +69,6 @@
       <i class="ti ti-layout-dashboard"></i> Ringkasan Utama
     </a>
 
-    <div class="sa-nav-label">Data Jadi</div>
-    <a href="{{ url('/superadmin/status-masjid') }}"
-       class="sa-nav-item {{ ($activeNav ?? '') === 'status-masjid' ? 'active' : '' }}">
-      <i class="ti ti-building-mosque"></i> Data Masjid
-    </a>
-
     <div class="sa-nav-label">Monitoring</div>
     <a href="{{ url('/superadmin/status-cabang') }}"
        class="sa-nav-item {{ ($activeNav ?? '') === 'status-cabang' ? 'active' : '' }}">
@@ -90,13 +84,17 @@
        class="sa-nav-item {{ ($activeNav ?? '') === 'akun-admin' ? 'active' : '' }}">
       <i class="ti ti-users-group"></i> Manajemen Akun
     </a>
+    <a href="{{ url('/superadmin/settings') }}"
+       class="sa-nav-item {{ ($activeNav ?? '') === 'settings' ? 'active' : '' }}">
+      <i class="ti ti-settings"></i> Pengaturan
+    </a>
   </nav>
 
   <div class="sa-sidebar-footer">
-    <form action="{{ route('logout') }}" method="POST">
+    <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari sistem?');">
       @csrf
       <button type="submit" class="sa-nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:#ef4444;">
-        <i class="ti ti-logout"></i> Logout
+        <i class="ti ti-logout"></i> Keluar
       </button>
     </form>
   </div>

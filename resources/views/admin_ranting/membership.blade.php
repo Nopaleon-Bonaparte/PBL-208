@@ -271,109 +271,57 @@ window.addEventListener('load', function() {
 
       </div><!-- /chart cards -->
 
-      <!-- BOTTOM TWO COLS -->
-      <div class="grid-2">
+      <!-- STATUS PENGAJUAN -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Status Pengajuan</span>
+        </div>
+        <div style="padding:0;">
 
-        <!-- STATUS RANTING -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Status Ranting (PRM)</span>
-            <a href="{{ url('/prm/status-ranting') }}" class="card-link">Lihat Semua</a>
+          @forelse($daftarPengajuan ?? [] as $p)
+          @php
+            $dotColor   = match($p->status) { 'approved' => '#22c55e', 'rejected' => '#ef4444', default => '#f59e0b' };
+            $statusText = match($p->status) { 'approved' => 'DISETUJUI', 'rejected' => 'DITOLAK', default => 'PENDING' };
+            $statusColor = match($p->status) {
+              'approved' => 'color:var(--green-600)',
+              'rejected' => 'color:var(--red-text)',
+              default    => 'color:#b45309'
+            };
+          @endphp
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--gray-100);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:10px;height:10px;border-radius:50%;background:{{ $dotColor }};flex-shrink:0;"></span>
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">{{ $p->jenis_pengajuan }}</span>
+            </div>
+            <span style="font-size:12px;font-weight:700;letter-spacing:.04em;{{ $statusColor }}">{{ $statusText }}</span>
           </div>
-          <div style="padding:12px 20px;display:flex;flex-direction:column;gap:12px;">
-
-            @forelse($daftarRanting ?? [] as $r)
-            @php
-              $skor = $r->skor_keaktifan ?? 0;
-              $barColor = $skor >= 70 ? '#22c55e' : ($skor >= 40 ? '#f59e0b' : '#ef4444');
-            @endphp
-            <div style="padding-bottom:12px;border-bottom:1px solid var(--gray-100);">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                <span style="font-size:13px;font-weight:600;color:var(--gray-700);">{{ $r->nama_ranting }}</span>
-                <span style="font-size:13px;font-weight:700;color:var(--gray-600);">{{ $skor }}</span>
-              </div>
-              <div style="background:#f1f5f9;border-radius:999px;height:8px;overflow:hidden;">
-                <div class="prm-bar" data-width="{{ $skor }}" style="width:0%;height:100%;background:{{ $barColor }};border-radius:999px;transition:width 1s cubic-bezier(.4,0,.2,1);"></div>
-              </div>
+          @empty
+          {{-- Data demo --}}
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--gray-100);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:10px;height:10px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></span>
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">Pendaftaran Masjid Al-Ikhlas</span>
             </div>
-            @empty
-            {{-- Data demo --}}
-            @php
-            $demoRanting = [
-              ['nama' => 'PRM Belian',       'skor' => 92, 'color' => '#22c55e'],
-              ['nama' => 'PRM Sungai Panas', 'skor' => 85, 'color' => '#22c55e'],
-              ['nama' => 'PRM Sukajadi',     'skor' => 44, 'color' => '#f59e0b'],
-            ];
-            @endphp
-            @foreach($demoRanting as $pr)
-            <div style="padding-bottom:12px;border-bottom:1px solid var(--gray-100);">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                <span style="font-size:13px;font-weight:600;color:var(--gray-700);">{{ $pr['nama'] }}</span>
-                <span style="font-size:13px;font-weight:700;color:var(--gray-600);">{{ $pr['skor'] }}</span>
-              </div>
-              <div style="background:#f1f5f9;border-radius:999px;height:8px;overflow:hidden;">
-                <div class="prm-bar" data-width="{{ $pr['skor'] }}" style="width:0%;height:100%;background:{{ $pr['color'] }};border-radius:999px;transition:width 1s cubic-bezier(.4,0,.2,1);"></div>
-              </div>
-            </div>
-            @endforeach
-            @endforelse
-
+            <span style="font-size:12px;font-weight:700;color:#b45309;letter-spacing:.04em;">PENDING</span>
           </div>
-        </div><!-- /card status ranting -->
-
-        <!-- STATUS PENGAJUAN -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Status Pengajuan</span>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--gray-100);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:10px;height:10px;border-radius:50%;background:#22c55e;flex-shrink:0;"></span>
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">Sertifikat Wakaf Masjid Agung</span>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:var(--green-600);letter-spacing:.04em;">DISETUJUI</span>
           </div>
-          <div style="padding:0;">
-
-            @forelse($daftarPengajuan ?? [] as $p)
-            @php
-              $dotColor   = match($p->status) { 'approved' => '#22c55e', 'rejected' => '#ef4444', default => '#f59e0b' };
-              $statusText = match($p->status) { 'approved' => 'DISETUJUI', 'rejected' => 'DITOLAK', default => 'PENDING' };
-              $statusColor = match($p->status) {
-                'approved' => 'color:var(--green-600)',
-                'rejected' => 'color:var(--red-text)',
-                default    => 'color:#b45309'
-              };
-            @endphp
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--gray-100);">
-              <div style="display:flex;align-items:center;gap:12px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:{{ $dotColor }};flex-shrink:0;"></span>
-                <span style="font-size:14px;font-weight:500;color:var(--gray-800);">{{ $p->jenis_pengajuan }}</span>
-              </div>
-              <span style="font-size:12px;font-weight:700;letter-spacing:.04em;{{ $statusColor }}">{{ $statusText }}</span>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:10px;height:10px;border-radius:50%;background:#ef4444;flex-shrink:0;"></span>
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">AIW Musholla An-Nur Baloi</span>
             </div>
-            @empty
-            {{-- Data demo --}}
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--gray-100);">
-              <div style="display:flex;align-items:center;gap:12px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></span>
-                <span style="font-size:14px;font-weight:500;color:var(--gray-800);">Pendaftaran Masjid Al-Ikhlas</span>
-              </div>
-              <span style="font-size:12px;font-weight:700;color:#b45309;letter-spacing:.04em;">PENDING</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--gray-100);">
-              <div style="display:flex;align-items:center;gap:12px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:#22c55e;flex-shrink:0;"></span>
-                <span style="font-size:14px;font-weight:500;color:var(--gray-800);">Sertifikat Wakaf Masjid Agung</span>
-              </div>
-              <span style="font-size:12px;font-weight:700;color:var(--green-600);letter-spacing:.04em;">DISETUJUI</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;">
-              <div style="display:flex;align-items:center;gap:12px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:#ef4444;flex-shrink:0;"></span>
-                <span style="font-size:14px;font-weight:500;color:var(--gray-800);">AIW Musholla An-Nur Baloi</span>
-              </div>
-              <span style="font-size:12px;font-weight:700;color:var(--red-text);letter-spacing:.04em;">DITOLAK</span>
-            </div>
-            @endforelse
-
+            <span style="font-size:12px;font-weight:700;color:var(--red-text);letter-spacing:.04em;">DITOLAK</span>
           </div>
-        </div><!-- /card status pengajuan -->
+          @endforelse
 
-      </div><!-- /grid-2 -->
+        </div>
+      </div><!-- /card status pengajuan -->
 
     </main>
   </div><!-- /main-shell -->

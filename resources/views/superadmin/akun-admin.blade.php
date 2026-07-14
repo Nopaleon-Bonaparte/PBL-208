@@ -11,7 +11,7 @@
 <style>
 body { font-family: 'Inter', sans-serif; }
 
-.aa-stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+.aa-stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
 .aa-stat-card {
   background:#fff; border:1px solid #e5e7eb; border-radius:14px;
   padding:18px 20px; display:flex; justify-content:space-between; align-items:flex-start;
@@ -50,6 +50,43 @@ body { font-family: 'Inter', sans-serif; }
 .aa-page-btn.primary { background:#1e6b3f; color:#fff; border-color:#1e6b3f; }
 .aa-page-btn.disabled { opacity:.4; cursor:not-allowed; pointer-events:none; }
 
+.btn-detail-outline {
+  display: inline-block;
+  width: 72px;
+  padding: 5px 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+  color: #1d4ed8;
+  background-color: #fff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-detail-outline:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+}
+.btn-hapus-outline {
+  display: inline-block;
+  width: 72px;
+  padding: 5px 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+  color: #c2410c;
+  background-color: #fff;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-hapus-outline:hover {
+  background-color: #fff7ed;
+  border-color: #ea580c;
+}
+
 /* ── MODAL ── */
 .aa-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
 .aa-modal-overlay.open { display:flex; }
@@ -82,19 +119,13 @@ body { font-family: 'Inter', sans-serif; }
 
     <main class="page-content">
 
-      <div class="flex justify-between items-end mb-6">
+      <div class="flex justify-between items-start mb-10">
         <div>
           <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Manajemen Akun Administrator</h2>
           <p class="text-gray-500 font-medium mt-1">Kelola hak akses dan identitas untuk admin Cabang, Ranting, dan Masjid di lingkungan PDM Kota Batam.</p>
         </div>
         <div class="flex items-center gap-2">
-          <button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg font-semibold text-sm shadow-sm transition flex items-center gap-2" onclick="openCabangModal()">
-            <i class="ti ti-building-community"></i> Tambah Cabang
-          </button>
-          <button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg font-semibold text-sm shadow-sm transition flex items-center gap-2" onclick="openRantingModal()">
-            <i class="ti ti-git-branch"></i> Tambah Ranting
-          </button>
-          <button class="bg-green-700 hover:bg-green-800 text-white px-5 py-2.5 rounded-lg font-semibold text-sm shadow transition flex items-center gap-2" onclick="openAkunModal()">
+          <button class="btn btn-primary" onclick="openAkunModal()">
             <i class="ti ti-plus"></i> Tambah Akun Baru
           </button>
         </div>
@@ -135,10 +166,6 @@ body { font-family: 'Inter', sans-serif; }
           <div><div class="aa-stat-label">Admin Ranting (PRM)</div><div class="aa-stat-val">{{ $totalRanting }}</div></div>
           <i class="ti ti-git-branch aa-stat-icon"></i>
         </div>
-        <div class="aa-stat-card">
-          <div><div class="aa-stat-label">Admin Masjid</div><div class="aa-stat-val">{{ $totalMasjid }}</div></div>
-          <i class="ti ti-building-mosque aa-stat-icon"></i>
-        </div>
       </div>
 
       {{-- ── FILTER BAR ── --}}
@@ -151,13 +178,26 @@ body { font-family: 'Inter', sans-serif; }
           <option value="">Semua Peran</option>
           <option value="R01" {{ request('role') === 'R01' ? 'selected' : '' }}>Admin Cabang</option>
           <option value="R03" {{ request('role') === 'R03' ? 'selected' : '' }}>Admin Ranting</option>
-          <option value="R02" {{ request('role') === 'R02' ? 'selected' : '' }}>Admin Masjid</option>
+
         </select>
-        <select name="unit" class="aa-select" onchange="this.form.submit()">
-          <option value="">Semua Unit PCM/PRM</option>
-          @foreach($daftarCabang as $c)
-            <option value="{{ $c->id_cabang }}" {{ request('unit') === $c->id_cabang ? 'selected' : '' }}>{{ $c->nama_cabang }}</option>
-          @endforeach
+        <select name="cabang" id="filterCabangSelect" class="aa-select" onchange="this.form.submit()">
+          <option value="">Semua Cabang (PCM)</option>
+          <option value="Batam Kota" {{ request('cabang') === 'Batam Kota' ? 'selected' : '' }}>Batam Kota</option>
+          <option value="Batu Aji" {{ request('cabang') === 'Batu Aji' ? 'selected' : '' }}>Batu Aji</option>
+          <option value="Batu Ampar" {{ request('cabang') === 'Batu Ampar' ? 'selected' : '' }}>Batu Ampar</option>
+          <option value="Belakang Padang" {{ request('cabang') === 'Belakang Padang' ? 'selected' : '' }}>Belakang Padang</option>
+          <option value="Bengkong" {{ request('cabang') === 'Bengkong' ? 'selected' : '' }}>Bengkong</option>
+          <option value="Bulang" {{ request('cabang') === 'Bulang' ? 'selected' : '' }}>Bulang</option>
+          <option value="Galang" {{ request('cabang') === 'Galang' ? 'selected' : '' }}>Galang</option>
+          <option value="Lubuk Baja" {{ request('cabang') === 'Lubuk Baja' ? 'selected' : '' }}>Lubuk Baja</option>
+          <option value="Nongsa" {{ request('cabang') === 'Nongsa' ? 'selected' : '' }}>Nongsa</option>
+          <option value="Sagulung" {{ request('cabang') === 'Sagulung' ? 'selected' : '' }}>Sagulung</option>
+          <option value="Sei Beduk" {{ request('cabang') === 'Sei Beduk' ? 'selected' : '' }}>Sei Beduk</option>
+          <option value="Sekupang" {{ request('cabang') === 'Sekupang' ? 'selected' : '' }}>Sekupang</option>
+        </select>
+
+        <select name="ranting" id="filterRantingSelect" class="aa-select" onchange="this.form.submit()">
+          <option value="">Semua Ranting (PRM)</option>
         </select>
       </form>
 
@@ -166,45 +206,61 @@ body { font-family: 'Inter', sans-serif; }
         <table class="aa-table">
           <thead>
             <tr>
-              <th>Nama & Username</th>
-              <th>Peran</th>
-              <th>Unit Organisasi</th>
-              <th>Login Terakhir</th>
-              <th>Status</th>
-              <th>Aksi</th>
+              <th style="width: 60px; text-align: center;">No</th>
+              <th style="width: 150px;">Peran</th>
+              <th style="padding-left: 40px;">Nama</th>
+              <th style="padding-left: 40px;">Wilayah</th>
+              <th style="width: 100px; text-align: center;">Aksi</th>
             </tr>
           </thead>
           <tbody>
             @forelse($admins as $a)
             @php
               $roleClass = match($a->id_role) { 'R01' => 'rp-cabang', 'R03' => 'rp-ranting', default => 'rp-masjid' };
-              $unitName = $a->nama_masjid ?? $a->nama_ranting ?? $a->nama_cabang ?? '—';
-              $loginText = $a->terakhir_login ? \Carbon\Carbon::parse($a->terakhir_login)->diffForHumans() : 'Belum pernah login';
-              $statusDot = $a->status_akun === 'Aktif' ? 'sd-aktif' : 'sd-nonaktif';
+              
+              $wilayahName = '—';
+              if ($a->id_role === 'R01') {
+                  $wilayahName = $a->nama_cabang_direct ? str_replace('PCM ', '', $a->nama_cabang_direct) : '—';
+              } elseif ($a->id_role === 'R03') {
+                  $cabangName = $a->nama_cabang_ranting ? str_replace('PCM ', '', $a->nama_cabang_ranting) : '—';
+                  $wilayahName = $cabangName . ' - ' . ($a->nama_ranting ?? '—');
+              }
             @endphp
             <tr>
-              <td>
-                <div class="aa-name">{{ $a->nama_lengkap ?? $a->username }}</div>
-                <div class="aa-username">{{ $a->username }}</div>
+              <td style="text-align: center; color: #6b7280; font-weight: 500;">
+                {{ ($admins->currentPage() - 1) * $admins->perPage() + $loop->iteration }}
               </td>
               <td><span class="aa-role-pill {{ $roleClass }}">{{ $a->nama_role }}</span></td>
-              <td>{{ $unitName }}</td>
-              <td><span class="aa-status-dot {{ $statusDot }}"></span>{{ $loginText }}</td>
-              <td>{{ $a->status_akun }}</td>
-              <td>
-                <button class="aa-action-icon ai-edit" title="Edit"><i class="ti ti-pencil"></i></button>
-                <form method="POST" action="{{ url('/superadmin/akun-admin/'.$a->id_user.'/reset-password') }}" style="display:inline;">
-                  @csrf
-                  <button type="submit" class="aa-action-icon ai-reset" title="Reset Password" onclick="return confirm('Reset password akun ini ke default?');"><i class="ti ti-key"></i></button>
-                </form>
-                <form method="POST" action="{{ url('/superadmin/akun-admin/'.$a->id_user.'/toggle-status') }}" style="display:inline;">
-                  @csrf
-                  <button type="submit" class="aa-action-icon ai-block" title="{{ $a->status_akun === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan' }}" onclick="return confirm('Ubah status akun ini?');"><i class="ti ti-ban"></i></button>
-                </form>
+              <td style="padding-left: 40px;">
+                <div class="aa-name" style="font-weight: 600; color: #111827;">{{ $a->nama_lengkap }}</div>
+              </td>
+              <td style="padding-left: 40px;">
+                <span style="font-weight: 500; color: #374151;">{{ $wilayahName }}</span>
+              </td>
+              <td style="text-align: center; vertical-align: middle;">
+                <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+                  <button type="button" class="btn-detail-outline"
+                    data-nama="{{ $a->nama_lengkap }}"
+                    data-username="{{ $a->username }}"
+                    data-email="{{ $a->email ?? '-' }}"
+                    data-hp="{{ $a->no_hp ?? '-' }}"
+                    data-role="{{ $a->nama_role }}"
+                    data-cabang="{{ $a->id_role === 'R01' ? $a->nama_cabang_direct : ($a->id_role === 'R03' ? $a->nama_cabang_ranting : '-') }}"
+                    data-ranting="{{ $a->id_role === 'R03' ? $a->nama_ranting : '-' }}"
+                    onclick="openDetailModal(this)">
+                    Detail
+                  </button>
+                  <form method="POST" action="{{ url('/superadmin/akun-admin/'.$a->id_user.'/delete') }}" style="display:block; width: 100%;">
+                    @csrf
+                    <button type="submit" class="btn-hapus-outline" onclick="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
+                      Hapus
+                    </button>
+                  </form>
+                </div>
               </td>
             </tr>
             @empty
-            <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:30px;">Tidak ada data akun ditemukan.</td></tr>
+            <tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:30px;">Tidak ada data akun ditemukan.</td></tr>
             @endforelse
           </tbody>
         </table>
@@ -258,7 +314,7 @@ body { font-family: 'Inter', sans-serif; }
           </div>
           <div class="aa-form-group">
             <label>No. HP</label>
-            <input type="text" name="no_hp" placeholder="08xx-xxxx-xxxx">
+            <input type="text" name="no_hp" id="aaNoHpInput" placeholder="08xx-xxxx-xxxx">
           </div>
         </div>
 
@@ -268,27 +324,33 @@ body { font-family: 'Inter', sans-serif; }
             <option value="">— Pilih Peran —</option>
             <option value="R01">Admin Cabang (PCM)</option>
             <option value="R03">Admin Ranting (PRM)</option>
-            <option value="R02">Admin Masjid (Pengurus Masjid)</option>
+
           </select>
         </div>
 
-        <div class="aa-form-group" id="aaUnitRantingField" style="display:none;">
-          <label>Ranting (PRM)</label>
-          <select name="id_ranting">
-            <option value="">— Pilih Ranting —</option>
-            @foreach(\Illuminate\Support\Facades\DB::table('ranting')->get() as $r)
-              <option value="{{ $r->id_ranting }}">{{ $r->nama_ranting }}</option>
-            @endforeach
+        <div class="aa-form-group" id="aaBranchGroup" style="display:none;">
+          <label id="aaBranchLabel">Kecamatan (Cabang) <span class="req">*</span></label>
+          <select name="kecamatan_cabang" id="aaBranchSelect">
+            <option value="">— Pilih Kecamatan —</option>
+            <option value="Batam Kota">Batam Kota</option>
+            <option value="Nongsa">Nongsa</option>
+            <option value="Bengkong">Bengkong</option>
+            <option value="Batu Ampar">Batu Ampar</option>
+            <option value="Sekupang">Sekupang</option>
+            <option value="Lubuk Baja">Lubuk Baja</option>
+            <option value="Sei Beduk">Sei Beduk</option>
+            <option value="Batu Aji">Batu Aji</option>
+            <option value="Sagulung">Sagulung</option>
+            <option value="Galang">Galang</option>
+            <option value="Bulang">Bulang</option>
+            <option value="Belakang Padang">Belakang Padang</option>
           </select>
         </div>
 
-        <div class="aa-form-group" id="aaUnitMasjidField" style="display:none;">
-          <label>Masjid yang Dikelola</label>
-          <select name="id_masjid">
-            <option value="">— Pilih Masjid —</option>
-            @foreach(\Illuminate\Support\Facades\DB::table('masjid')->where('wilayah', '!=', null)->get() as $m)
-              <option value="{{ $m->id_masjid }}">{{ $m->nama_masjid }} ({{ $m->wilayah }})</option>
-            @endforeach
+        <div class="aa-form-group" id="aaRantingGroup" style="display:none;">
+          <label>Kelurahan (Ranting) <span class="req">*</span></label>
+          <select name="nama_ranting" id="aaRantingSelect">
+            <option value="">— Pilih Kelurahan —</option>
           </select>
         </div>
 
@@ -303,62 +365,54 @@ body { font-family: 'Inter', sans-serif; }
   </div>
 </div>
 
-<!-- ── MODAL TAMBAH CABANG ── -->
-<div class="aa-modal-overlay" id="cabangModalOverlay" onclick="closeOnBgCabang(event)">
+<!-- ── MODAL DETAIL AKUN ── -->
+<div class="aa-modal-overlay" id="detailModalOverlay" onclick="closeOnBgDetail(event)">
   <div class="aa-modal-box">
     <div class="aa-modal-header">
-      <h3><i class="ti ti-building-community" style="margin-right:6px;color:#1e6b3f;"></i>Tambah Cabang Baru</h3>
-      <button class="aa-modal-close" onclick="closeCabangModal()"><i class="ti ti-x"></i></button>
+      <h3><i class="ti ti-user" style="margin-right:6px;color:#1e6b3f;"></i>Detail Akun Administrator</h3>
+      <button class="aa-modal-close" onclick="closeDetailModal()"><i class="ti ti-x"></i></button>
     </div>
-    <form method="POST" action="{{ url('/superadmin/cabang') }}">
-      @csrf
-      <div class="aa-modal-body">
+    <div class="aa-modal-body">
+      <div class="aa-form-row-2">
         <div class="aa-form-group">
-          <label>Nama Cabang (PCM) <span class="req">*</span></label>
-          <input type="text" name="nama_cabang" placeholder="Contoh: PCM Batu Aji" required>
+          <label>Nama Lengkap</label>
+          <input type="text" id="detailNama" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
         </div>
         <div class="aa-form-group">
-          <label>Wilayah</label>
-          <input type="text" name="wilayah" placeholder="Kota Batam" value="Kota Batam">
+          <label>Username</label>
+          <input type="text" id="detailUsername" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
         </div>
       </div>
-      <div class="aa-modal-footer">
-        <button type="button" class="aa-btn-cancel" onclick="closeCabangModal()">Batal</button>
-        <button type="submit" class="aa-btn-save"><i class="ti ti-device-floppy"></i> Simpan Cabang</button>
-      </div>
-    </form>
-  </div>
-</div>
 
-<!-- ── MODAL TAMBAH RANTING ── -->
-<div class="aa-modal-overlay" id="rantingModalOverlay" onclick="closeOnBgRanting(event)">
-  <div class="aa-modal-box">
-    <div class="aa-modal-header">
-      <h3><i class="ti ti-git-branch" style="margin-right:6px;color:#1e6b3f;"></i>Tambah Ranting Baru</h3>
-      <button class="aa-modal-close" onclick="closeRantingModal()"><i class="ti ti-x"></i></button>
+      <div class="aa-form-row-2">
+        <div class="aa-form-group">
+          <label>Email</label>
+          <input type="text" id="detailEmail" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+        </div>
+        <div class="aa-form-group">
+          <label>No. HP</label>
+          <input type="text" id="detailHp" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+        </div>
+      </div>
+
+      <div class="aa-form-group">
+        <label>Peran</label>
+        <input type="text" id="detailRole" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+      </div>
+
+      <div class="aa-form-group" id="detailBranchGroup">
+        <label id="detailBranchLabel">Kecamatan (Cabang)</label>
+        <input type="text" id="detailCabang" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+      </div>
+
+      <div class="aa-form-group" id="detailRantingGroup">
+        <label>Kelurahan (Ranting)</label>
+        <input type="text" id="detailRanting" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+      </div>
     </div>
-    <form method="POST" action="{{ url('/superadmin/ranting') }}">
-      @csrf
-      <div class="aa-modal-body">
-        <div class="aa-form-group">
-          <label>Nama Ranting (PRM) <span class="req">*</span></label>
-          <input type="text" name="nama_ranting" placeholder="Contoh: PRM Bukit Indah" required>
-        </div>
-        <div class="aa-form-group">
-          <label>Cabang Induk <span class="req">*</span></label>
-          <select name="id_cabang" required>
-            <option value="">— Pilih Cabang —</option>
-            @foreach(\Illuminate\Support\Facades\DB::table('cabang')->get() as $c)
-              <option value="{{ $c->id_cabang }}">{{ $c->nama_cabang }}</option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-      <div class="aa-modal-footer">
-        <button type="button" class="aa-btn-cancel" onclick="closeRantingModal()">Batal</button>
-        <button type="submit" class="aa-btn-save"><i class="ti ti-device-floppy"></i> Simpan Ranting</button>
-      </div>
-    </form>
+    <div class="aa-modal-footer">
+      <button type="button" class="aa-btn-cancel" onclick="closeDetailModal()">Tutup</button>
+    </div>
   </div>
 </div>
 
@@ -374,20 +428,148 @@ function closeAkunModal() {
 function closeOnBgAkun(e) {
   if (e.target === document.getElementById('aaModalOverlay')) closeAkunModal();
 }
+const BATAM_WILAYAH = {
+  "Batam Kota": ["Baloi Permai", "Belian", "Sukajadi", "Sungai Panas", "Taman Baloi", "Teluk Tering"],
+  "Batu Aji": ["Bukit Tempayan", "Buliang", "Kibing", "Tanjung Uncang"],
+  "Batu Ampar": ["Batu Merah", "Kampung Seraya", "Sungai Jodoh", "Tanjung Sengkuang"],
+  "Belakang Padang": ["Kasu", "Pecong", "Pemping", "Pulau Terong", "Sekanak Raya", "Tanjung Sari"],
+  "Bengkong": ["Bengkong Indah", "Bengkong Laut", "Sadai", "Tanjung Buntung"],
+  "Bulang": ["Batu Legong", "Bulang Lintang", "Pantai Gelam", "Pulau Buluh", "Setokok", "Temoyong"],
+  "Galang": ["Air Raja", "Galang Baru", "Karas", "Pulau Abang", "Rempang Cate", "Sembulang", "Sijantung", "Subang Mas"],
+  "Lubuk Baja": ["Baloi Indah", "Batu Selicin", "Kampung Pelita", "Lubuk Baja Kota", "Tanjung Uma"],
+  "Nongsa": ["Batu Besar", "Kabil", "Ngenang", "Sambau"],
+  "Sagulung": ["Sagulung Kota", "Sungai Binti", "Sungai Langkai", "Sungai Lekop", "Sungai Pelunggut", "Tembesi"],
+  "Sei Beduk": ["Duriangkang", "Mangsang", "Muka Kuning", "Tanjung Piayu"],
+  "Sekupang": ["Patam Lestari", "Sungai Harapan", "Tanjung Pinggir", "Tanjung Riau", "Tiban Baru", "Tiban Indah", "Tiban Lama"]
+};
+
+function populateKelurahan(kecSelectId, kelSelectId, defaultValue) {
+  const selectedKec = document.getElementById(kecSelectId).value;
+  const kelSelect = document.getElementById(kelSelectId);
+  
+  const defaultLabel = kelSelectId === 'filterRantingSelect' ? 'Semua Ranting (PRM)' : '— Pilih Kelurahan —';
+  kelSelect.innerHTML = `<option value="">${defaultLabel}</option>`;
+  
+  if (selectedKec && BATAM_WILAYAH[selectedKec]) {
+    BATAM_WILAYAH[selectedKec].forEach(function (kel) {
+      const opt = document.createElement('option');
+      opt.value = kel;
+      opt.innerText = kel;
+      if (kel === defaultValue) {
+        opt.selected = true;
+      }
+      kelSelect.appendChild(opt);
+    });
+  }
+}
+
+// Init Filter Ranting pada load page
+const initialFilterCabang = "{{ request('cabang') }}";
+const initialFilterRanting = "{{ request('ranting') }}";
+if (initialFilterCabang) {
+  populateKelurahan('filterCabangSelect', 'filterRantingSelect', initialFilterRanting);
+}
+
+// Event Listeners
+document.getElementById('filterCabangSelect').addEventListener('change', function () {
+  populateKelurahan('filterCabangSelect', 'filterRantingSelect', '');
+});
+
+document.getElementById('aaBranchSelect').addEventListener('change', function () {
+  populateKelurahan('aaBranchSelect', 'aaRantingSelect', '');
+});
+
 function toggleUnitField() {
   const role = document.getElementById('aaRoleSelect').value;
-  document.getElementById('aaUnitRantingField').style.display = (role === 'R01' || role === 'R03') ? 'block' : 'none';
-  document.getElementById('aaUnitMasjidField').style.display = (role === 'R02') ? 'block' : 'none';
+  const branchGroup = document.getElementById('aaBranchGroup');
+  const rantingGroup = document.getElementById('aaRantingGroup');
+  const branchLabel = document.getElementById('aaBranchLabel');
+  const branchSelect = document.getElementById('aaBranchSelect');
+  const rantingInput = document.getElementById('aaRantingSelect');
+  
+  if (role === 'R01') {
+    branchGroup.style.display = 'block';
+    branchLabel.innerHTML = 'Kecamatan (Cabang) <span class="req">*</span>';
+    branchSelect.required = true;
+    rantingGroup.style.display = 'none';
+    rantingInput.required = false;
+  } else if (role === 'R03') {
+    branchGroup.style.display = 'block';
+    branchLabel.innerHTML = 'Cabang Induk (Kecamatan) <span class="req">*</span>';
+    branchSelect.required = true;
+    rantingGroup.style.display = 'block';
+    rantingInput.required = true;
+  } else {
+    branchGroup.style.display = 'none';
+    branchSelect.required = false;
+    rantingGroup.style.display = 'none';
+    rantingInput.required = false;
+  }
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAkunModal(); });
+document.addEventListener('keydown', e => { 
+  if (e.key === 'Escape') {
+    closeAkunModal(); 
+    closeDetailModal(); 
+  } 
+});
 
-function openCabangModal() { document.getElementById('cabangModalOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeCabangModal() { document.getElementById('cabangModalOverlay').classList.remove('open'); document.body.style.overflow=''; }
-function closeOnBgCabang(e) { if (e.target === document.getElementById('cabangModalOverlay')) closeCabangModal(); }
+function openDetailModal(btn) {
+  document.getElementById('detailNama').value = btn.getAttribute('data-nama');
+  document.getElementById('detailUsername').value = btn.getAttribute('data-username');
+  document.getElementById('detailEmail').value = btn.getAttribute('data-email');
+  document.getElementById('detailHp').value = btn.getAttribute('data-hp');
+  document.getElementById('detailRole').value = btn.getAttribute('data-role');
+  
+  const cabang = btn.getAttribute('data-cabang');
+  const ranting = btn.getAttribute('data-ranting');
+  const isRanting = ranting !== '-';
 
-function openRantingModal() { document.getElementById('rantingModalOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeRantingModal() { document.getElementById('rantingModalOverlay').classList.remove('open'); document.body.style.overflow=''; }
-function closeOnBgRanting(e) { if (e.target === document.getElementById('rantingModalOverlay')) closeRantingModal(); }
+  if (isRanting) {
+    document.getElementById('detailBranchGroup').style.display = 'block';
+    document.getElementById('detailBranchLabel').innerText = 'Cabang Induk (Kecamatan)';
+    document.getElementById('detailCabang').value = cabang.replace('PCM ', '');
+    document.getElementById('detailRantingGroup').style.display = 'block';
+    document.getElementById('detailRanting').value = ranting.replace('PRM ', '');
+  } else if (cabang !== '-') {
+    document.getElementById('detailBranchGroup').style.display = 'block';
+    document.getElementById('detailBranchLabel').innerText = 'Kecamatan (Cabang)';
+    document.getElementById('detailCabang').value = cabang.replace('PCM ', '');
+    document.getElementById('detailRantingGroup').style.display = 'none';
+  } else {
+    document.getElementById('detailBranchGroup').style.display = 'none';
+    document.getElementById('detailRantingGroup').style.display = 'none';
+  }
+  
+  document.getElementById('detailModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetailModal() {
+  document.getElementById('detailModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeOnBgDetail(e) {
+  if (e.target === document.getElementById('detailModalOverlay')) closeDetailModal();
+}
+
+const hpInput = document.getElementById('aaNoHpInput');
+if (hpInput) {
+  hpInput.addEventListener('input', function (e) {
+    let val = e.target.value.replace(/\D/g, '');
+    let formatted = '';
+    if (val.length > 0) {
+      formatted += val.substring(0, 4);
+    }
+    if (val.length > 4) {
+      formatted += '-' + val.substring(4, 8);
+    }
+    if (val.length > 8) {
+      formatted += '-' + val.substring(8, 13);
+    }
+    e.target.value = formatted;
+  });
+}
 </script>
 </body>
 </html>

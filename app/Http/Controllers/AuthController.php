@@ -20,23 +20,66 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        // ── Coba login via tabel user terlebih dahulu ──
         $user = DB::table('user')
             ->where('username', $request->username)
             ->first();
 
-        // Username tidak ditemukan
+        // ── Jika tidak ditemukan di tabel user, coba tabel masjid (Takmir / Pengurus Masjid) ──
         if (!$user) {
-            return redirect('/login')->withErrors([
-                'loginError' => 'Username atau password salah.',
-            ]);
+            $masjid = DB::table('masjid')
+                ->where('default_username', $request->username)
+                ->where('status_data', 'approved')
+                ->first();
+
+            if (!$masjid) {
+                return redirect('/login')->withErrors([
+                    'loginError' => 'Username atau password salah.',
+                ]);
+            }
+
+            // Validasi password takmir (plain text saat ini)
+            $pwValid = false;
+            if (\Illuminate\Support\Str::startsWith($masjid->default_password ?? '', '$2y$')) {
+                $pwValid = Hash::check($request->password, $masjid->default_password);
+            } else {
+                $pwValid = $request->password === $masjid->default_password;
+            }
+
+            if (!$pwValid) {
+                return redirect('/login')->withErrors([
+                    'loginError' => 'Username atau password salah.',
+                ]);
+            }
+
+            // ── Set session untuk takmir ──
+            $request->session()->put('is_logged_in', true);
+            $request->session()->put('id_role',    'R02');
+            $request->session()->put('username',   $masjid->default_username);
+            $request->session()->put('id_user',    'TAKMIR_' . $masjid->id_masjid);
+            $request->session()->put('id_masjid',  $masjid->id_masjid);
+            $request->session()->put('nama_masjid', $masjid->nama_masjid);
+            $request->session()->put('id_ranting', $masjid->id_ranting);
+
+            // Ambil nama ranting & cabang
+            if ($masjid->id_ranting) {
+                $ranting = DB::table('ranting')->where('id_ranting', $masjid->id_ranting)->first();
+                if ($ranting) {
+                    $request->session()->put('nama_ranting', $ranting->nama_ranting);
+                    $cabang = DB::table('cabang')->where('id_cabang', $ranting->id_cabang)->first();
+                    if ($cabang) {
+                        $request->session()->put('id_cabang',   $cabang->id_cabang);
+                        $request->session()->put('nama_cabang', $cabang->nama_cabang);
+                    }
+                }
+            }
+
+            $request->session()->regenerate();
+            return redirect('/dashboard');
         }
 
-        // Cek password.
-        // Jika password di-hash dengan bcrypt (Hash::make), gunakan Hash::check.
-        // Jika password disimpan plain text (seperti contoh '***' di seeder demo),
-        // fallback ke perbandingan langsung supaya tetap kompatibel saat development.
+        // ── Login normal via tabel user ──
         $passwordValid = false;
-
         if (\Illuminate\Support\Str::startsWith($user->password, '$2y$')) {
             $passwordValid = Hash::check($request->password, $user->password);
         } else {
@@ -99,6 +142,15 @@ class AuthController extends Controller
                     $request->session()->put('nama_cabang', $cabang->nama_cabang);
                 }
             }
+        } elseif ($user->id_cabang) {
+            $cabang = DB::table('cabang')
+                ->where('id_cabang', $user->id_cabang)
+                ->first();
+
+            if ($cabang) {
+                $request->session()->put('id_cabang', $cabang->id_cabang);
+                $request->session()->put('nama_cabang', $cabang->nama_cabang);
+            }
         }
 
         // Regenerate session id untuk keamanan (cegah session fixation)
@@ -113,6 +165,6 @@ class AuthController extends Controller
         $request->session()->flush();
         $request->session()->regenerate();
 
-        return redirect('/login');
+        return redirect('/login')->with('success', 'Anda telah berhasil keluar dari sistem.');
     }
 }

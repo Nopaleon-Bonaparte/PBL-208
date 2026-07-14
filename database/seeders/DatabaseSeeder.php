@@ -37,15 +37,14 @@ class DatabaseSeeder extends Seeder
             ['id_cabang' => 'CB01', 'nama_cabang' => 'PCM Batam Kota', 'wilayah' => 'Kota Batam', 'status_keaktifan_cabang' => 'Aktif'],
             ['id_cabang' => 'CB02', 'nama_cabang' => 'PCM Sagulung',   'wilayah' => 'Kota Batam', 'status_keaktifan_cabang' => 'Aktif'],
             ['id_cabang' => 'CB03', 'nama_cabang' => 'PCM Sekupang',   'wilayah' => 'Kota Batam', 'status_keaktifan_cabang' => 'Aktif'],
-            ['id_cabang' => 'CB04', 'nama_cabang' => 'PCM Nongsa',     'wilayah' => 'Kota Batam', 'status_keaktifan_cabang' => 'Nonaktif'],
         ]);
 
         // ── RANTING (PRM) ──
         DB::table('ranting')->insert([
-            ['id_ranting' => 'RT01', 'nama_ranting' => 'PRM Belian',        'status_keaktifan_ranting' => 'Aktif', 'id_cabang' => 'CB01'],
-            ['id_ranting' => 'RT02', 'nama_ranting' => 'PRM Sukajadi',      'status_keaktifan_ranting' => 'Aktif', 'id_cabang' => 'CB01'],
-            ['id_ranting' => 'RT03', 'nama_ranting' => 'PRM Tembesi',       'status_keaktifan_ranting' => 'Aktif', 'id_cabang' => 'CB02'],
-            ['id_ranting' => 'RT04', 'nama_ranting' => 'PRM Sekupang Raya', 'status_keaktifan_ranting' => 'Aktif', 'id_cabang' => 'CB03'],
+            ['id_ranting' => 'RT01', 'nama_ranting' => 'PRM Belian',        'status_keaktifan_ranting' => 'Aktif', 'id_cabang' => 'CB01', 'kecamatan' => 'Batam Kota'],
+            ['id_ranting' => 'RT02', 'nama_ranting' => 'PRM Sukajadi',      'status_keaktifan_ranting' => 'Aktif', 'id_cabang' => 'CB01', 'kecamatan' => 'Batam Kota'],
+            ['id_ranting' => 'RT03', 'nama_ranting' => 'PRM Tembesi',       'status_keaktifan_ranting' => 'Aktif', 'id_cabang' => 'CB02', 'kecamatan' => 'Sagulung'],
+            ['id_ranting' => 'RT04', 'nama_ranting' => 'PRM Sekupang Raya', 'status_keaktifan_ranting' => 'Aktif', 'id_cabang' => 'CB03', 'kecamatan' => 'Sekupang'],
         ]);
 
         // ── MASJID — contoh nyata di Batam (semua sudah approved) ──
@@ -65,49 +64,7 @@ class DatabaseSeeder extends Seeder
                 'nama_lengkap' => 'Calvin Pratama', 'email' => 'calvin@pdmbatam.or.id', 'no_hp' => '0812-1000-0001',
                 'password' => 'password123', 'id_role' => 'R99', 'id_ranting' => 'RT01',
                 'status_akun' => 'Aktif', 'terakhir_login' => now(),
-            ],
-            [
-                'id_user' => 'U002', 'username' => 'budi',
-                'nama_lengkap' => 'Syamsul Bahri', 'email' => 'syamsul_mjd_alhikmah@pdmbatam.or.id', 'no_hp' => '0813-2000-0002',
-                'password' => 'password123', 'id_role' => 'R02', 'id_ranting' => 'RT02',
-                'status_akun' => 'Aktif', 'terakhir_login' => now()->subDay(),
-            ],
-            [
-                'id_user' => 'U003', 'username' => 'nauval',
-                'nama_lengkap' => 'H. Ahmad Zaki, M.Pd', 'email' => 'ahmad_zaki_pcm@pdmbatam.or.id', 'no_hp' => '0811-3000-0003',
-                'password' => 'password123', 'id_role' => 'R01', 'id_ranting' => 'RT01',
-                'status_akun' => 'Aktif', 'terakhir_login' => now()->subMinutes(10),
-            ],
-            [
-                'id_user' => 'U004', 'username' => 'anggun',
-                'nama_lengkap' => 'Nuraini Rahmawati', 'email' => 'nuraini_prm_center@pdmbatam.or.id', 'no_hp' => '0852-4000-0004',
-                'password' => 'password123', 'id_role' => 'R03', 'id_ranting' => 'RT01',
-                'status_akun' => 'Aktif', 'terakhir_login' => now()->subHours(2),
-            ],
-            [
-                'id_user' => 'U005', 'username' => 'rina_prm_sukajadi',
-                'nama_lengkap' => 'Rina Marlina', 'email' => 'rina_prm_sukajadi@pdmbatam.or.id', 'no_hp' => '0853-5000-0005',
-                'password' => 'password123', 'id_role' => 'R03', 'id_ranting' => 'RT02',
-                'status_akun' => 'Aktif', 'terakhir_login' => now()->subDays(3),
-            ],
-            [
-                'id_user' => 'U006', 'username' => 'fauzi_pcm_sagulung',
-                'nama_lengkap' => 'H. Fauzi Hidayat', 'email' => 'fauzi_pcm_sagulung@pdmbatam.or.id', 'no_hp' => '0817-6000-0006',
-                'password' => 'password123', 'id_role' => 'R01', 'id_ranting' => 'RT03',
-                'status_akun' => 'Aktif', 'terakhir_login' => now()->subHours(5),
-            ],
-            [
-                'id_user' => 'U007', 'username' => 'dewi_mjd_agung',
-                'nama_lengkap' => 'Dewi Kusuma', 'email' => 'dewi_mjd_agung@pdmbatam.or.id', 'no_hp' => '0822-7000-0007',
-                'password' => 'password123', 'id_role' => 'R02', 'id_ranting' => 'RT01',
-                'status_akun' => 'Nonaktif', 'terakhir_login' => now()->subDays(14),
-            ],
-        ]);
-
-        // ── USER_MASJID (pivot: siapa mengelola masjid apa) ──
-        DB::table('user_masjid')->insert([
-            ['id_user' => 'U002', 'id_masjid' => 'M002'],
-            ['id_user' => 'U007', 'id_masjid' => 'M001'],
+            ]
         ]);
 
         // ── PENGAJUAN (demo: 1 permohonan tambah masjid menunggu di antrian cabang CB01) ──
@@ -115,7 +72,7 @@ class DatabaseSeeder extends Seeder
             [
                 'id_pengajuan'    => 'PGJ0001',
                 'id_masjid'       => 'M005',
-                'id_user_pengaju' => 'U004', // admin ranting RT01
+                'id_user_pengaju' => 'U001',
                 'jenis_pengajuan' => 'tambah_masjid',
                 'deskripsi'       => 'Penambahan data musholla baru oleh admin ranting.',
                 'data_baru'       => json_encode([

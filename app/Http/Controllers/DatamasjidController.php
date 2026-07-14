@@ -23,6 +23,7 @@ class DataMasjidController extends Controller
         $masjid = DB::table('masjid')
             ->leftJoin('ranting', 'masjid.id_ranting', '=', 'ranting.id_ranting')
             ->where('masjid.id_ranting', session('id_ranting'))
+            ->where('masjid.status_data', '!=', 'approved')
             ->select('masjid.*', 'ranting.nama_ranting')
             ->orderBy('masjid.nama_masjid')
             ->get();
@@ -50,20 +51,53 @@ class DataMasjidController extends Controller
         return view('admin_cabang.data-masjid', compact('masjid'));
     }
 
-    /** Superadmin — seluruh masjid APPROVED (read only). */
-    public function superadmin(Request $request)
+    /** Admin Ranting — manajemen masjid (yang sudah APPROVED) beserta detail legalitas/wakafnya. */
+    public function legalitas(Request $request)
     {
-        if (session('id_role') != 'R99') return redirect('/dashboard');
+        if (session('id_role') != 'R03') return redirect('/dashboard');
+        
+        $idRanting = session('id_ranting');
 
-        $masjid = DB::table('masjid')
+        $daftarMasjid = DB::table('masjid')
             ->leftJoin('ranting', 'masjid.id_ranting', '=', 'ranting.id_ranting')
-            ->leftJoin('cabang', 'ranting.id_cabang', '=', 'cabang.id_cabang')
+            ->where('masjid.id_ranting', $idRanting)
             ->where('masjid.status_data', 'approved')
-            ->select('masjid.*', 'ranting.nama_ranting', 'cabang.nama_cabang')
-            ->orderBy('cabang.nama_cabang')
+            ->select('masjid.*', 'ranting.nama_ranting')
             ->orderBy('masjid.nama_masjid')
             ->get();
 
-        return view('superadmin.status-masjid', compact('masjid'));
+        $totalMasjid = $daftarMasjid->count();
+        $totalJenisM = $daftarMasjid->where('tipe', 'Masjid')->count();
+        $totalJenisMu = $daftarMasjid->where('tipe', 'Musholla')->count();
+
+        // Cari kelengkapan masing-masing masjid
+        $totalBelumLengkap = 0;
+        foreach ($daftarMasjid as $m) {
+            $required = [
+                $m->alamat, $m->kapasitas, $m->no_sk, $m->status_tanah,
+                $m->jenis_sertifikat, $m->no_sertifikat, $m->nama_nazir,
+                $m->sound_system, $m->jumlah_ac, $m->alat_kebersihan,
+                $m->sarana_lainnya, $m->takmir_nama, $m->takmir_nik,
+                $m->takmir_wa, $m->foto_bangunan, $m->file_sk,
+                $m->file_sertifikat, $m->file_ktp, $m->email
+            ];
+            
+            $filled = 0;
+            foreach ($required as $field) {
+                if ($field !== null && $field !== '') {
+                    $filled++;
+                }
+            }
+            
+            $pct = round(($filled / count($required)) * 100);
+            $m->kelengkapan_data = $pct;
+            if ($pct < 100) {
+                $totalBelumLengkap++;
+            }
+        }
+
+        return view('admin_ranting.legalitas-masjid', compact(
+            'daftarMasjid', 'totalMasjid', 'totalJenisM', 'totalJenisMu', 'totalBelumLengkap'
+        ));
     }
 }

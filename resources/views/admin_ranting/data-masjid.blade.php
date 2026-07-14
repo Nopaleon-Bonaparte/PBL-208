@@ -9,7 +9,7 @@
 @include('shared.styles')
 <style>
 body { font-family:'Inter',sans-serif; }
-.m-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
+.m-grid { display:flex; flex-direction:column; gap:16px; }
 .m-card { background:#fff; border:1px solid var(--gray-200); border-radius:12px; padding:18px;
   box-shadow:0 1px 3px rgba(0,0,0,.05); transition:transform .15s, box-shadow .15s; }
 .m-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(30,107,63,.15); }
@@ -87,11 +87,7 @@ body { font-family:'Inter',sans-serif; }
               @endif
             </div>
 
-            <div class="m-actions">
-              <a href="{{ url('/prm/edit-masjid/'.$m->id_masjid) }}" class="btn btn-secondary btn-sm">
-                <i class="ti ti-edit"></i> Ajukan Perubahan
-              </a>
-            </div>
+            <!-- Fitur Ajukan Perubahan dihapus sesuai permintaan -->
           </div>
         @empty
           <div class="empty" style="grid-column:1/-1;">

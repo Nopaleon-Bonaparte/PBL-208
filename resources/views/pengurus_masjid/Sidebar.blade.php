@@ -82,7 +82,7 @@
     <i class="ti ti-settings"></i><span>Pengaturan</span>
   </a>
 
-  <form method="POST" action="{{ url('/logout') }}" style="margin:0;padding:0;">
+  <form method="POST" action="{{ url('/logout') }}" style="margin:0;padding:0;" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari sistem?');">
     @csrf
     <button type="submit" class="nav-item logout-item"
             style="width:100%;background:none;border:none;cursor:pointer;
@@ -93,7 +93,7 @@
             onmouseleave="this.style.background='none';this.style.color='var(--gray-500)';"
             onmousedown="this.style.background='#fee2e2';this.style.color='#b91c1c';"
             onmouseup="this.style.background='#fff5f5';this.style.color='#dc2626';">
-      <i class="ti ti-logout"></i><span>Logout</span>
+      <i class="ti ti-logout"></i><span>Keluar</span>
     </button>
   </form>
 

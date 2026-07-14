@@ -3,34 +3,35 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pengaturan — PRM Administration</title>
+<title>Pengaturan Akun — PDM Kota Batam</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+@vite('resources/css/app.css')
 @include('shared.styles')
 <style>
   body { font-family: 'Inter', sans-serif; background: #f6f8eb; }
 
   .settings-card { background:#fff; border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:24px; }
   .settings-card-title { display:flex; align-items:center; gap:10px; font-size:16px; font-weight:700; color:var(--gray-900); padding-bottom:16px; margin-bottom:20px; border-bottom:1px solid var(--gray-100); }
-  .settings-card-title i { font-size:20px; color:var(--green-700); }
+  .settings-card-title i { font-size:20px; color:#1e6b3f; }
   .settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 20px; margin-bottom:18px; }
   .settings-field label { font-size:12px; font-weight:600; color:var(--gray-500); margin-bottom:6px; display:block; }
   .settings-field input { width:100%; padding:11px 14px; border:1px solid var(--gray-200); border-radius:var(--radius-md); font-size:13px; color:var(--gray-800); font-family:inherit; background:#fff; }
-  .settings-field input:focus { outline:none; border-color:var(--green-400); box-shadow:0 0 0 3px rgba(39,134,79,.08); }
+  .settings-field input:focus { outline:none; border-color:#1e6b3f; box-shadow:0 0 0 3px rgba(30,107,63,.08); }
 </style>
 </head>
 <body>
 <div class="app-shell">
 
-  @include('admin_ranting.sidebar', ['activeNav' => 'settings'])
+  @include('superadmin.sidebar', ['activeNav' => 'settings'])
 
   <div class="main-shell">
-    @include('admin_ranting.topbar', ['activeTopLink' => 'settings'])
+    @include('superadmin.topbar', ['activeTopLink' => 'settings'])
 
     <main class="page-content">
 
       <div class="breadcrumb">
-        <a href="{{ url('/prm/membership') }}">Dashboard</a>
+        <a href="{{ url('/dashboard') }}">Dashboard</a>
         <span class="sep">›</span>
         <span class="current">Pengaturan</span>
       </div>
@@ -41,7 +42,7 @@
         <div class="page-header">
           <div class="page-header-left">
             <h1>Pengaturan</h1>
-            <p>Kelola informasi profil akun admin ranting.</p>
+            <p>Kelola informasi profil dan kredensial login akun Anda.</p>
           </div>
           <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> Simpan Perubahan</button>
         </div>
@@ -82,7 +83,7 @@
             </div>
             <div class="settings-field">
               <label>No. HP</label>
-              <input type="text" name="no_hp" id="prmHpInput" value="{{ old('no_hp', $user->no_hp) }}">
+              <input type="text" name="no_hp" id="saHpInput" value="{{ old('no_hp', $user->no_hp) }}">
             </div>
             <div class="settings-field">
               <label>Password Baru (Kosongkan jika tidak diubah)</label>
@@ -101,7 +102,7 @@
 </div>
 
 <script>
-const hpInput = document.getElementById('prmHpInput');
+const hpInput = document.getElementById('saHpInput');
 if (hpInput) {
   hpInput.addEventListener('input', function (e) {
     let val = e.target.value.replace(/\D/g, '');

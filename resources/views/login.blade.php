@@ -53,6 +53,9 @@
   .error-msg { background:rgba(220,38,38,.85); color:#fff; font-size:13px;
     padding:10px 16px; border-radius:12px; margin-bottom:16px; text-align:center; }
 
+  .success-msg { background:rgba(16,185,129,.85); color:#fff; font-size:13px;
+    padding:10px 16px; border-radius:12px; margin-bottom:16px; text-align:center; }
+
   .credit { position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
     color:#fff; font-size:15px; opacity:.9; text-shadow:0 2px 8px rgba(0,0,0,.5); }
 
@@ -69,7 +72,7 @@
 
   <div class="brand">
     <h1>PDM</h1>
-    <h2>Pimpinan Daerah Muhammadiyah</h2>
+    <h2>Pimpinan Daerah Muhammadiyah Kota Batam</h2>
     <p>Sistem Informasi Manajemen Organisasi Berbasis Dashboard Information System</p>
   </div>
 
@@ -83,6 +86,10 @@
 
     @if($errors->any())
       <div class="error-msg">{{ $errors->first() }}</div>
+    @endif
+
+    @if(session('success'))
+      <div class="success-msg">{{ session('success') }}</div>
     @endif
 
     <form method="POST" action="{{ url('/login') }}">
