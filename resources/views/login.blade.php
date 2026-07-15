@@ -1,88 +1,110 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PDM Muhammadiyah Kota Batam</title>
-    @vite('resources/css/app.css')
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .bg-muhammadiyah { background-color: #005b00; }
-        .text-muhammadiyah { color: #005b00; }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Login — PDM Kota Batam</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+  body {
+    min-height:100vh;
+    background: linear-gradient(rgba(20,40,30,.25), rgba(20,40,30,.35)),
+                url('{{ asset("images/batam-bg.jpg") }}') center/cover no-repeat;
+    display:flex; align-items:center; justify-content:flex-end;
+    padding:40px; position:relative; overflow:hidden;
+  }
+
+  .brand {
+    position:absolute; left:60px; top:50%; transform:translateY(-50%);
+    color:#fff; max-width:55%;
+  }
+  .brand h1 { font-size:130px; font-weight:800; line-height:.95; letter-spacing:2px;
+              text-shadow:0 4px 20px rgba(0,0,0,.35); }
+  .brand h2 { font-size:40px; font-weight:700; margin-top:6px;
+              text-shadow:0 2px 12px rgba(0,0,0,.4); }
+  .brand p  { font-size:18px; font-weight:400; margin-top:12px; opacity:.95;
+              text-shadow:0 2px 10px rgba(0,0,0,.5); }
+
+  .login-card {
+    width:420px; background:rgba(255,255,255,.12);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1.5px solid rgba(255,255,255,.5); border-radius:24px;
+    padding:50px 40px 40px; box-shadow:0 8px 40px rgba(0,0,0,.25); margin-right:40px;
+  }
+  .login-card .avatar { width:70px; height:70px; margin:0 auto 30px;
+                        display:flex; align-items:center; justify-content:center; }
+  .login-card .avatar svg { width:64px; height:64px; }
+
+  .field { display:flex; align-items:center; background:rgba(255,255,255,.15);
+    border:1.5px solid rgba(255,255,255,.6); border-radius:999px;
+    padding:14px 22px; margin-bottom:18px; }
+  .field input { width:100%; background:transparent; border:none; outline:none;
+                 color:#fff; font-size:15px; }
+  .field input::placeholder { color:rgba(255,255,255,.85); }
+
+  .btn-masuk { width:100%; background:#8ba05a; color:#fff; font-size:17px;
+    font-weight:700; letter-spacing:1px; border:none; border-radius:999px;
+    padding:15px; margin-top:8px; cursor:pointer; transition:background .15s, transform .1s; }
+  .btn-masuk:hover { background:#7a9049; }
+  .btn-masuk:active { transform:scale(.98); }
+
+  .error-msg { background:rgba(220,38,38,.85); color:#fff; font-size:13px;
+    padding:10px 16px; border-radius:12px; margin-bottom:16px; text-align:center; }
+
+  .success-msg { background:rgba(16,185,129,.85); color:#fff; font-size:13px;
+    padding:10px 16px; border-radius:12px; margin-bottom:16px; text-align:center; }
+
+  .credit { position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+    color:#fff; font-size:15px; opacity:.9; text-shadow:0 2px 8px rgba(0,0,0,.5); }
+
+  @media (max-width:900px) {
+    body { justify-content:center; padding:20px; }
+    .brand { position:static; transform:none; text-align:center; max-width:100%; margin-bottom:30px; }
+    .brand h1 { font-size:80px; }
+    .brand h2 { font-size:26px; }
+    .login-card { margin-right:0; width:100%; max-width:400px; }
+  }
+</style>
 </head>
-<body class="bg-white h-screen flex flex-col items-center justify-center p-4">
+<body>
 
-    <div class="text-center mb-8 flex flex-col items-center">
-        <img src="{{ asset('images/logo-muhammadiyah-official.png') }}" alt="Logo Muhammadiyah" class="w-24 h-24 object-contain mb-4 rounded-full border-2 border-gray-100 shadow-sm">
+  <div class="brand">
+    <h1>PDM</h1>
+    <h2>Pimpinan Daerah Muhammadiyah Kota Batam</h2>
+    <p>Sistem Informasi Manajemen Organisasi Berbasis Dashboard Information System</p>
+  </div>
 
-        <h1 class="text-4xl font-bold text-muhammadiyah mb-1">Selamat Datang</h1>
-        <p class="text-gray-500 font-medium text-sm">masuk ke dashboard Pimpinan Daerah Muhammadiyah</p>
+  <div class="login-card">
+    <div class="avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke-linecap="round"/>
+      </svg>
     </div>
 
-    <div class="bg-white p-8 rounded-[2rem] shadow-[0_0_40px_rgba(0,0,0,0.05)] border border-gray-100 w-full max-w-[400px]">
+    @if($errors->any())
+      <div class="error-msg">{{ $errors->first() }}</div>
+    @endif
 
-        @if($errors->has('loginError'))
-            <div class="bg-red-50 text-red-600 p-3 rounded-xl text-sm mb-5 text-center font-medium">
-                {{ $errors->first('loginError') }}
-            </div>
-        @endif
+    @if(session('success'))
+      <div class="success-msg">{{ session('success') }}</div>
+    @endif
 
-        <form action="/login" method="POST">
-            @csrf
+    <form method="POST" action="{{ url('/login') }}">
+      @csrf
+      <div class="field">
+        <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required/>
+      </div>
+      <div class="field">
+        <input type="password" name="password" placeholder="Password" required/>
+      </div>
+      <button type="submit" class="btn-masuk">MASUK</button>
+    </form>
+  </div>
 
-            <div class="mb-5">
-                <label class="block text-muhammadiyah font-bold text-sm mb-2">Username/Id anggota</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-green-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                        </svg>
-                    </span>
-                    <input type="text" name="username" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" placeholder="Username" required>
-                </div>
-            </div>
-
-            <div class="mb-5">
-                <label class="block text-muhammadiyah font-bold text-sm mb-2">kata sandi</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-green-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                        </svg>
-                    </span>
-                    <input type="password" name="password" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" placeholder="masukkan kata sandi" required>
-                </div>
-            </div>
-
-            <div class="mb-8">
-                <label class="block text-muhammadiyah font-bold text-sm mb-2">Masuk sebagai</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-yellow-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
-                        </svg>
-                    </span>
-                    <select name="id_role" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm appearance-none focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
-                        <option value="R99">Superadmin (PDM pusat)</option>
-                        <option value="R01">Admin Cabang</option>
-                        <option value="R03">Admin Ranting</option>
-                        <option value="R02">Pengurus Masjid</option>
-                    </select>
-                </div>
-            </div>
-
-            <button type="submit" class="w-full bg-muhammadiyah text-white font-bold py-3 rounded-lg hover:bg-green-800 transition duration-200">
-                Masuk
-            </button>
-        </form>
-
-        <div class="mt-8 text-center">
-            <p class="text-gray-500 text-xs mb-1">Sistem ini hanya untuk anggota resmi</p>
-            <p class="text-muhammadiyah font-bold text-xs">PDM Muhammadiyah Kota Batam</p>
-        </div>
-    </div>
+  <div class="credit">Develop by : PBL TRPL 208</div>
 
 </body>
 </html>

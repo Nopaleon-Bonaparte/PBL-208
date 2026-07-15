@@ -1,292 +1,319 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Superadmin - PDM Kota Batam</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    @vite('resources/css/app.css')
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dashboard Superadmin — PDM Kota Batam</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+@include('shared.styles')
+<style>
+body { font-family: 'Inter', sans-serif; }
+
+/* ── STAT & CHART CARD PRESS EFFECT ── */
+.sa-stat-card, .card, .chart-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease,
+              border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  overflow: visible !important;
+}
+.sa-stat-card:hover, .card:hover, .chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30,107,63,.12);
+  border-color: var(--green-300);
+}
+.sa-stat-card:active, .card:active, .chart-card:active {
+  animation: card-shake 0.3s ease;
+  background: var(--green-50);
+  border-color: var(--green-400);
+  box-shadow: 0 2px 8px rgba(30,107,63,.15);
+}
+@keyframes card-shake {
+  0%   { transform: rotate(0deg) scale(1); }
+  20%  { transform: rotate(-1.5deg) scale(0.98); }
+  40%  { transform: rotate(1.5deg) scale(0.98); }
+  60%  { transform: rotate(-1deg) scale(0.99); }
+  80%  { transform: rotate(0.8deg) scale(0.99); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+.sa-stat-card.urgent:hover  { border-color: var(--gold); box-shadow: 0 6px 16px rgba(184,148,42,.15); }
+.sa-stat-card.urgent:active { background: #fef9e7; border-color: var(--gold-light); }
+
+/* ── Kartu atas lebih ringkas agar 2 muat 1 baris ── */
+.stat-cards { grid-template-columns: repeat(2, 1fr) !important; gap: 14px !important; }
+.sa-stat-card { padding: 14px 16px !important; }
+.sa-stat-card .stat-value { font-size: 24px; }
+.sa-stat-card .stat-card-icon { width: 34px; height: 34px; }
+.sa-stat-card .stat-card-icon i { font-size: 17px; }
+
+/* ── Chart cards ── */
+.chart-card { background:#fff; border:1px solid var(--gray-200); border-radius:14px; padding:20px 22px; }
+.chart-title { font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--gray-400); }
+.chart-big { font-size:26px; font-weight:800; color:var(--gray-900); margin-top:2px; }
+.chart-delta { font-size:13px; font-weight:600; color:var(--green-600); margin:4px 0 6px; display:flex; align-items:center; gap:5px; }
+.chart-foot { font-size:11.5px; color:var(--gray-400); margin-top:8px; }
+
+/* ── Tooltip interaktif chart ── */
+.chart-card { position: relative; }
+.chart-tip {
+  position: absolute; pointer-events: none; z-index: 20;
+  background: #1f2937; color: #fff; font-size: 12px; font-weight: 600;
+  padding: 6px 10px; border-radius: 8px; white-space: nowrap;
+  transform: translate(-50%, -120%); opacity: 0; transition: opacity .12s;
+  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+}
+.chart-tip::after {
+  content: ''; position: absolute; left: 50%; top: 100%;
+  transform: translateX(-50%); border: 5px solid transparent; border-top-color: #1f2937;
+}
+.chart-tip.show { opacity: 1; }
+.chart-tip .tip-sub { font-weight: 500; color: #cbd5e1; font-size: 10.5px; }
+.bar-hit, .dot-hit { cursor: pointer; }
+.bar-el { transition: fill .12s; }
+
+/* ── Animasi masuk chart ── */
+@keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.bar-el { transform-origin: bottom; transform-box: fill-box; animation: barGrow .7s cubic-bezier(.22,1,.36,1) both; }
+#trendSvg .bar-el:nth-of-type(1){animation-delay:.05s}
+#trendSvg .bar-el:nth-of-type(2){animation-delay:.11s}
+#trendSvg .bar-el:nth-of-type(3){animation-delay:.17s}
+#trendSvg .bar-el:nth-of-type(4){animation-delay:.23s}
+#trendSvg .bar-el:nth-of-type(5){animation-delay:.29s}
+#trendSvg .bar-el:nth-of-type(6){animation-delay:.35s}
+#trendSvg .bar-el:nth-of-type(7){animation-delay:.41s}
+#trendSvg .bar-el:nth-of-type(8){animation-delay:.47s}
+
+@keyframes lineDraw { to { stroke-dashoffset: 0; } }
+.wakaf-line { stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: lineDraw 1.4s ease-out .2s forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.wakaf-area { opacity: 0; animation: fadeIn .9s ease-out .8s forwards; }
+.wakaf-dot  { opacity: 0; animation: fadeIn .3s ease-out forwards; }
+
+/* ── Animasi progress bar status ranting ── */
+@keyframes fillGrow { from { width: 0 !important; } }
+.pr-fill { animation: fillGrow 1s cubic-bezier(.22,1,.36,1) both; }
+
+/* ── Progress bar (status ranting) ── */
+.pr-row { padding:14px 0; border-bottom:1px solid var(--gray-100); }
+.pr-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.pr-name { font-size:14px; font-weight:600; color:var(--gray-800); }
+.pr-num  { font-size:15px; font-weight:700; color:var(--gray-500); }
+.pr-bar  { height:9px; background:var(--gray-100); border-radius:999px; overflow:hidden; }
+.pr-fill { height:100%; border-radius:999px; }
+.pf-green  { background:var(--green-500); }
+.pf-yellow { background:#f59e0b; }
+.pf-red    { background:#ef4444; }
+</style>
 </head>
-<body class="text-gray-800 antialiased" style="background-color: #f6f8eb;">
+<body>
+<div class="app-shell">
 
-    <div class="min-h-screen flex flex-col">
+  @include('superadmin.sidebar', ['activeNav' => 'dashboard'])
 
-        <header class="bg-green-800 text-white px-6 py-3 flex justify-between items-center z-20 shadow-md">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center p-1">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg leading-tight">PDM Kota Batam</h1>
-                    <p class="text-xs text-green-200">Sistem Informasi Manajemen Organisasi</p>
-                </div>
-            </div>
+  <div class="main-shell">
+    @include('superadmin.topbar', ['activeTopLink' => 'dashboard'])
 
-            <div class="flex items-center gap-4">
-                <button class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-4 py-1.5 rounded-full flex items-center gap-2 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                    </svg>
-                    <div class="text-xs text-left leading-tight font-semibold">
-                        <span class="block">9 Pengajuan</span>
-                        <span class="block">Menunggu</span>
-                    </div>
-                </button>
+    <main class="page-content">
 
-                <form action="{{ route('logout') }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded font-bold text-sm shadow transition cursor-pointer">
-                        LOGOUT
-                    </button>
-                </form>
-
-                <div class="flex items-center gap-2 cursor-pointer">
-                    <div class="w-10 h-10 bg-gray-300 rounded-full overflow-hidden border-2 border-green-600">
-                        <img src="{{ asset('images/avatar.jpg') }}" alt="Profile" class="w-full h-full object-cover">
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                </div>
-            </div>
-        </header>
-
-        <div class="flex flex-1 overflow-hidden">
-
-            <aside class="w-64 bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0">
-                <nav class="p-4 space-y-6">
-
-                    <div>
-                        <p class="text-xs font-bold text-gray-400 mb-2 px-3 tracking-wider">DASHBOARD</p>
-                        <!-- LINK INI SUDAH DIUBAH KE /dashboard -->
-                        <a href="/dashboard" class="flex items-center gap-3 bg-[#f6f8eb] text-green-800 px-3 py-2.5 rounded-lg font-semibold">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-                            </svg>
-                            Ringkasan Utama
-                        </a>
-                    </div>
-
-                    <div>
-                        <p class="text-xs font-bold text-gray-400 mb-2 px-3 tracking-wider">PERSETUJUAN</p>
-                        <!-- LINK INI SUDAH DIUBAH KE /superadmin/persetujuan -->
-                        <a href="/superadmin/persetujuan" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 019 9v.375M10.125 2.25A3.375 3.375 0 0113.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375M9 15l2.25 2.25L15 12" />
-                            </svg>
-                            Antrian Persetujuan
-                        </a>
-                        <a href="#" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Riwayat Keputusan
-                        </a>
-                    </div>
-
-                    <div>
-                        <p class="text-xs font-bold text-gray-400 mb-2 px-3 tracking-wider">MONITORING</p>
-                        <a href="#" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
-                            </svg>
-                            Status cabang/ranting
-                        </a>
-                        <a href="#" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                            </svg>
-                            Status ranting
-                        </a>
-                        <a href="#" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
-                            </svg>
-                            Status Masjid dan Musholla
-                        </a>
-                    </div>
-
-                    <div>
-                        <p class="text-xs font-bold text-gray-400 mb-2 px-3 tracking-wider">LAPORAN</p>
-                        <a href="#" class="flex items-center gap-3 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg font-medium transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                            </svg>
-                            Data Anggota
-                        </a>
-                    </div>
-
-                </nav>
-            </aside>
-
-            <main class="flex-1 p-8 overflow-y-auto">
-
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Dashboard Superadmin</h2>
-                        <p class="text-gray-500 font-medium mt-1">Monitoring menyeluruh PDM Muhammadiyah Kota Batam</p>
-                    </div>
-                    <div class="flex gap-3">
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                                </svg>
-                            </div>
-                            <input type="text" placeholder="Search tickets..." class="pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-64 text-sm">
-                        </div>
-                        <button class="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 font-medium text-gray-700 transition text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-                            </svg>
-                            Filter
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase">Total Anggota</p>
-                            <p class="text-4xl font-bold text-gray-900 mb-2">100</p>
-                            <p class="text-sm text-green-600 font-medium">+ 20 bulan ini</p>
-                        </div>
-                        <div class="p-3 bg-green-50 text-green-800 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-8 h-8">
-                                <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM8.25 9.5a3.146 3.146 0 00-1.5.388A3.75 3.75 0 0115 6.75c0 .354-.047.697-.135 1.02a3.145 3.145 0 00-1.5-.393H8.25zM12 12.75a5.25 5.25 0 015.158 4.25c.03.22.042.443.042.668v.582a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75v-.582c0-.225.012-.448.042-.668A5.25 5.25 0 0112 12.75zm-6.208 4.792A6.75 6.75 0 0112 11.25a6.75 6.75 0 016.208 6.292.75.75 0 01-.749.833H6.541a.75.75 0 01-.749-.833z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase">Pimpinan Cabang Muhammadiyah</p>
-                            <p class="text-4xl font-bold text-gray-900 mb-2">12</p>
-                            <p class="text-sm text-green-600 font-medium">Aktif dari 15 kecamatan</p>
-                        </div>
-                        <div class="p-3 bg-green-50 text-green-800 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase">Pimpinan Ranting Muhammadiyah</p>
-                            <p class="text-4xl font-bold text-gray-900 mb-2">36</p>
-                            <p class="text-sm text-green-600 font-medium">Dari 5 cabang aktif</p>
-                        </div>
-                        <div class="p-3 bg-green-50 text-green-800 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-8 h-8">
-                                <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase">Antrian ACC</p>
-                            <p class="text-4xl font-bold text-gray-900 mb-2">9</p>
-                            <p class="text-sm text-green-600 font-medium">Perlu ditindaklanjuti</p>
-                        </div>
-                        <div class="p-3 bg-green-800 text-white rounded-xl shadow-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                            </svg>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="space-y-6">
-
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold text-gray-900 text-lg">Status Cabang (Kecamatan)</h3>
-                            <a href="#" class="text-green-700 font-semibold text-sm hover:underline">Lihat Semua</a>
-                        </div>
-
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                <span class="font-medium text-gray-800">Batu Aji</span>
-                                <div class="flex items-center gap-4">
-                                    <span class="w-4 h-4 rounded-full border-[3px] border-green-500 block"></span>
-                                    <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-md font-bold w-20 text-center uppercase tracking-wide">Aktif</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                <span class="font-medium text-gray-800">Batu Ampar</span>
-                                <div class="flex items-center gap-4">
-                                    <span class="w-4 h-4 rounded-full border-[3px] border-green-500 block"></span>
-                                    <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-md font-bold w-20 text-center uppercase tracking-wide">Aktif</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                <span class="font-medium text-gray-800">Belakang Padang</span>
-                                <div class="flex items-center gap-4">
-                                    <span class="w-4 h-4 rounded-full border-[3px] border-yellow-400 block"></span>
-                                    <span class="bg-yellow-400 text-white text-xs px-3 py-1 rounded-md font-bold w-20 text-center uppercase tracking-wide">-Aktif</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                <span class="font-medium text-gray-800">Nongsa</span>
-                                <div class="flex items-center gap-4">
-                                    <span class="w-4 h-4 rounded-full border-[3px] border-green-500 block"></span>
-                                    <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-md font-bold w-20 text-center uppercase tracking-wide">Aktif</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                <span class="font-medium text-gray-800">Sagulung</span>
-                                <div class="flex items-center gap-4">
-                                    <span class="w-4 h-4 rounded-full border-[3px] border-red-500 block"></span>
-                                    <span class="bg-red-400 text-white text-xs px-3 py-1 rounded-md font-bold w-20 text-center uppercase tracking-wide">Vakum</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold text-gray-900 text-lg">Antrian Persetujuan</h3>
-                            <!-- LINK INI JUGA SUDAH DIUBAH KE /superadmin/persetujuan -->
-                            <a href="/superadmin/persetujuan" class="text-green-700 font-semibold text-sm hover:underline">Lihat Semua</a>
-                        </div>
-
-                        <div class="space-y-4 mb-6">
-                            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                <div class="flex items-center gap-3">
-                                    <span class="font-medium text-gray-800">Perubahan Takmir</span>
-                                    <span class="bg-blue-50 border border-blue-200 text-blue-700 text-xs px-2.5 py-0.5 rounded-md font-semibold tracking-wide">Cabang</span>
-                                </div>
-                                <span class="bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs px-4 py-1 rounded-md font-bold uppercase tracking-wide">Menunggu</span>
-                            </div>
-                        </div>
-
-                        <!-- LINK BUTTON INI JUGA UDAH DIUBAH -->
-                        <a href="/superadmin/persetujuan" class="w-full py-3 border border-gray-200 rounded-lg text-gray-600 font-semibold text-sm hover:bg-gray-50 transition flex items-center justify-center gap-2">
-                            Lihat Semua Pengajuan
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                            </svg>
-                        </a>
-                    </div>
-
-                </div>
-
-            </main>
+      <!-- PAGE HEADER -->
+      <div class="page-header" style="margin-bottom:20px;">
+        <div class="page-header-left">
+          <h1>Dashboard Superadmin</h1>
+          <p>Monitoring menyeluruh PDM Muhammadiyah Kota Batam</p>
         </div>
-    </div>
+      </div>
 
+      <!-- STAT CARDS -->
+      <div class="stat-cards" style="margin-bottom:20px;">
+
+        <div class="stat-card sa-stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon"><i class="ti ti-building-community"></i></div>
+            <span class="stat-pill pill-blue">{{ $total_cabang ?? 12 }} Aktif</span>
+          </div>
+          <div class="stat-label">Cabang (PCM)</div>
+          <div class="stat-value">{{ $total_cabang ?? 12 }}</div>
+        </div>
+
+        <div class="stat-card sa-stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon"><i class="ti ti-home-2"></i></div>
+            <span class="stat-pill pill-blue">{{ $total_ranting ?? 36 }} PRM</span>
+          </div>
+          <div class="stat-label">Ranting (PRM)</div>
+          <div class="stat-value">{{ $total_ranting ?? 36 }}</div>
+        </div>
+
+      </div>
+
+      <!-- ROW: CHARTS (Trend Masjid + Status Wakaf) -->
+      <div class="grid-2" style="margin-bottom:20px;">
+
+        <!-- TREND PENAMBAHAN RANTING -->
+        <div class="chart-card" id="trendCard">
+          <div class="chart-title">Trend Penambahan Ranting</div>
+          <div class="chart-big">{{ $total_ranting ?? 0 }}</div>
+          <div class="chart-delta"><i class="ti ti-trending-up"></i> +1 ranting dari tahun lalu</div>
+          <div class="chart-tip" id="trendTip"></div>
+          <svg viewBox="0 0 480 220" width="100%" height="200" preserveAspectRatio="xMidYMid meet" id="trendSvg">
+            @php
+              $maxT = max($trenRanting ?: [1]); $maxT = $maxT < 5 ? 25 : ceil($maxT/5)*5;
+              $n = count($trenRanting); $bw = 40; $gap = (480 - 40 - $n*$bw) / max($n-1,1); $x0 = 30;
+            @endphp
+            @for($i=0;$i<=5;$i++)
+              @php $gy = 20 + (170*($i/5)); $val = round($maxT*(1-$i/5)); @endphp
+              <line x1="30" y1="{{ $gy }}" x2="470" y2="{{ $gy }}" stroke="#eef0f2" stroke-width="1"/>
+              <text x="24" y="{{ $gy+4 }}" text-anchor="end" font-size="9" fill="#9ca3af">{{ $val }}</text>
+            @endfor
+            @foreach($trenRanting as $k => $v)
+              @php
+                 $h = 170 * ($v / $maxT); $x = $x0 + $k*($bw+$gap); $y = 20 + (170 - $h);
+                 $last = $k === $n-1;
+              @endphp
+              <rect class="bar-el" x="{{ $x }}" y="{{ $y }}" width="{{ $bw }}" height="{{ $h }}" rx="4"
+                    fill="{{ $last ? '#1e6b3f' : '#c7e3d2' }}"/>
+              {{-- hit area transparan (dari atas grafik) untuk hover mudah --}}
+              <rect class="bar-hit" x="{{ $x }}" y="20" width="{{ $bw }}" height="170" fill="transparent"
+                    data-label="{{ $trenTahun[$k] }}" data-value="{{ $v }}"
+                    data-cx="{{ $x + $bw/2 }}" data-cy="{{ $y }}"></rect>
+              <text x="{{ $x + $bw/2 }}" y="205" text-anchor="middle" font-size="9" fill="#9ca3af">{{ $trenTahun[$k] }}</text>
+            @endforeach
+          </svg>
+          <div class="chart-foot">Data per tahun · Kota Batam</div>
+        </div>
+
+        <!-- TREND PENAMBAHAN CABANG -->
+        <div class="chart-card" id="wakafCard">
+          <div class="chart-title">Trend Penambahan Cabang</div>
+          <div class="chart-big">{{ $total_cabang ?? 0 }} Cabang</div>
+          <div class="chart-delta"><i class="ti ti-trending-up"></i> +10% dari bulan lalu</div>
+          <div class="chart-tip" id="wakafTip"></div>
+          <svg viewBox="0 0 480 220" width="100%" height="200" preserveAspectRatio="xMidYMid meet" id="wakafSvg">
+            @php
+              $wak = $trenCabang ?: [1];
+              $bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+              $wmin = min($wak) > 0 ? min($wak) - 1 : 0;
+              $wmax = max($wak) + 1;
+              if ($wmax <= $wmin) $wmax = $wmin + 5;
+              $wn = count($wak);
+              $wx0 = 34;
+              $wstep = (470-$wx0)/max($wn-1,1);
+              $pts = '';
+              $area = "{$wx0},190 ";
+              foreach($wak as $i=>$v){
+                  $px = $wx0+$i*$wstep;
+                  $py = 20+170*(1-(($v-$wmin)/($wmax-$wmin)));
+                  $pts .= "{$px},{$py} ";
+                  $area .= "{$px},{$py} ";
+              }
+              $area .= (($wx0+($wn-1)*$wstep)).',190';
+            @endphp
+            @for($i=0;$i<=3;$i++)
+              @php $gy=20+(170*($i/3)); $val=round($wmax-($wmax-$wmin)*($i/3)); @endphp
+              <line x1="30" y1="{{ $gy }}" x2="470" y2="{{ $gy }}" stroke="#eef0f2" stroke-width="1"/>
+              <text x="24" y="{{ $gy+4 }}" text-anchor="end" font-size="9" fill="#9ca3af">{{ $val }}</text>
+            @endfor
+            <polygon class="wakaf-area" points="{{ $area }}" fill="#e8f3ec"/>
+            <polyline class="wakaf-line" points="{{ $pts }}" fill="none" stroke="#1e6b3f" stroke-width="2.5"/>
+            @foreach($wak as $i=>$v)
+              @php $px=$wx0+$i*$wstep; $py=20+170*(1-(($v-$wmin)/($wmax-$wmin))); @endphp
+              <circle class="wakaf-dot" cx="{{ $px }}" cy="{{ $py }}" r="3" fill="#1e6b3f" style="animation-delay:{{ 0.9 + $i*0.05 }}s"/>
+              {{-- hit area lingkaran besar transparan untuk hover --}}
+              <circle class="dot-hit" cx="{{ $px }}" cy="{{ $py }}" r="14" fill="transparent"
+                      data-label="{{ $bulan[$i] }}" data-value="{{ $v }}"
+                      data-cx="{{ $px }}" data-cy="{{ $py }}"></circle>
+              <text x="{{ $px }}" y="210" text-anchor="middle" font-size="8.5" fill="#9ca3af">{{ $bulan[$i] }}</text>
+            @endforeach
+          </svg>
+          <div class="chart-foot">Data per bulan · Kota Batam</div>
+        </div>
+
+      </div>
+
+      <!-- ROW: STATUS RANTING (progress) + STATUS CABANG -->
+      <div class="grid-2">
+
+        <!-- STATUS RANTING (PRM) -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Status Ranting (PRM)</span>
+            <a href="{{ url('/superadmin/status-ranting') }}" class="card-link">Lihat Semua</a>
+          </div>
+          <div style="padding:6px 20px 14px;">
+            @forelse(($daftarRanting ?? []) as $r)
+              @php $cls = $r->skor >= 70 ? 'pf-green' : ($r->skor >= 50 ? 'pf-yellow' : 'pf-red'); @endphp
+              <div class="pr-row">
+                <div class="pr-head">
+                  <span class="pr-name">{{ $r->nama }}</span>
+                  <span class="pr-num">{{ $r->skor }}</span>
+                </div>
+                <div class="pr-bar"><div class="pr-fill {{ $cls }}" style="width:{{ $r->skor }}%;"></div></div>
+              </div>
+            @empty
+              <div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Belum ada data ranting.</div>
+            @endforelse
+          </div>
+        </div>
+
+        <!-- STATUS CABANG -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Status Cabang (Kecamatan)</span>
+            <a href="{{ url('/superadmin/status-cabang') }}" class="card-link">Lihat Semua</a>
+          </div>
+          <div style="padding:0;">
+            @forelse(($daftarCabang ?? []) as $cb)
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--gray-100);">
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">{{ $cb->nama }}</span>
+              <span class="badge {{ $cb->badge }}">{{ strtoupper($cb->status) }}</span>
+            </div>
+            @empty
+            <div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">Belum ada data cabang.</div>
+            @endforelse
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+// ── Tooltip interaktif untuk chart (hover & touch) ──
+function setupChart(svgId, tipId, cardId, unit) {
+  const svg  = document.getElementById(svgId);
+  const tip  = document.getElementById(tipId);
+  const card = document.getElementById(cardId);
+  if (!svg || !tip || !card) return;
+
+  function showTip(el) {
+    const label = el.getAttribute('data-label');
+    const value = el.getAttribute('data-value');
+    const cx = parseFloat(el.getAttribute('data-cx'));
+    const cy = parseFloat(el.getAttribute('data-cy'));
+    // konversi koordinat viewBox (0..480 / 0..220) ke posisi piksel dalam card
+    const rect = svg.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const px = rect.left - cardRect.left + (cx / 480) * rect.width;
+    const py = rect.top  - cardRect.top  + (cy / 220) * rect.height;
+    tip.style.left = px + 'px';
+    tip.style.top  = py + 'px';
+    tip.innerHTML = '<div>' + value + ' ' + unit + '</div><div class="tip-sub">' + label + '</div>';
+    tip.classList.add('show');
+  }
+  function hideTip() { tip.classList.remove('show'); }
+
+  svg.querySelectorAll('.bar-hit, .dot-hit').forEach(hit => {
+    hit.addEventListener('mouseenter', () => showTip(hit));
+    hit.addEventListener('mouseleave', hideTip);
+    hit.addEventListener('touchstart', (e) => { e.preventDefault(); showTip(hit); }, {passive:false});
+    hit.addEventListener('touchend', () => setTimeout(hideTip, 1200));
+  });
+}
+setupChart('trendSvg', 'trendTip', 'trendCard', 'Ranting');
+setupChart('wakafSvg', 'wakafTip', 'wakafCard', 'Cabang');
+</script>
 </body>
 </html>
