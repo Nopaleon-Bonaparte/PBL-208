@@ -52,7 +52,8 @@ Route::prefix('superadmin')->group(function () {
     Route::get('/settings',                          [SettingsController::class, 'superadminIndex']);
 });
 
-Route::post('/settings/save', [SettingsController::class, 'save'])->name('settings.save');
+Route::post('/settings/save',        [SettingsController::class, 'save'])->name('settings.save');
+Route::post('/settings/save-masjid', [SettingsController::class, 'saveMasjid'])->name('settings.save.masjid');
 
 // ── ADMIN CABANG / PCM (R01) ──
 Route::prefix('pcm')->group(function () {

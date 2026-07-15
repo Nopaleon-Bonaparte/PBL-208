@@ -14,10 +14,30 @@
   .settings-card-title { display:flex; align-items:center; gap:10px; font-size:16px; font-weight:700; color:var(--gray-900); padding-bottom:16px; margin-bottom:20px; border-bottom:1px solid var(--gray-100); }
   .settings-card-title i { font-size:20px; color:var(--green-700); }
   .settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 20px; margin-bottom:18px; }
-  .settings-field label { font-size:12px; font-weight:600; color:var(--gray-500); margin-bottom:6px; display:block; }
-  .settings-field input { width:100%; padding:11px 14px; border:1px solid var(--gray-200); border-radius:var(--radius-md); font-size:13px; color:var(--gray-800); font-family:inherit; background:#fff; }
+  .settings-field label { font-size:12px; font-weight:600; color:var(--gray-500); margin-bottom:6px; display:block; text-transform:uppercase; letter-spacing:.04em; }
+  .settings-field input {
+    width:100%; padding:11px 14px; border:1px solid var(--gray-200);
+    border-radius:var(--radius-md); font-size:13px; color:var(--gray-800);
+    font-family:inherit; background:#fff; box-sizing:border-box;
+    transition: border-color .15s, box-shadow .15s;
+  }
   .settings-field input:focus { outline:none; border-color:var(--green-400); box-shadow:0 0 0 3px rgba(39,134,79,.08); }
   .settings-field input:disabled { background:var(--gray-50); color:var(--gray-500); cursor:not-allowed; }
+
+  .alert-success {
+    display:flex; align-items:center; gap:10px; background:#f0fdf4;
+    border:1px solid #bbf7d0; color:#15803d; padding:12px 16px;
+    border-radius:var(--radius-md); font-size:13px; font-weight:500; margin-bottom:20px;
+  }
+  .alert-error {
+    background:#fef2f2; border:1px solid #fecaca; color:#b91c1c;
+    padding:12px 16px; border-radius:var(--radius-md); font-size:13px;
+    font-weight:500; margin-bottom:20px;
+  }
+  .info-note {
+    font-size:12px; color:var(--gray-400); margin-top:6px;
+    display:flex; align-items:center; gap:5px;
+  }
 </style>
 </head>
 <body>
@@ -36,26 +56,29 @@
         <span class="current">Pengaturan</span>
       </div>
 
-      <form action="{{ route('settings.save') }}" method="POST">
+      <form action="{{ route('settings.save.masjid') }}" method="POST">
         @csrf
 
         <div class="page-header">
           <div class="page-header-left">
-            <h1>Pengaturan</h1>
-            <p>Kelola informasi profil akun pengurus masjid.</p>
+            <h1>Pengaturan Akun</h1>
+            <p>Kelola kredensial login akun pengurus masjid.</p>
           </div>
-          <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> Simpan Perubahan</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="ti ti-device-floppy"></i> Simpan Perubahan
+          </button>
         </div>
 
         @if(session('success'))
-          <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg font-medium flex items-center gap-2">
-            <i class="ti ti-circle-check"></i> {{ session('success') }}
+          <div class="alert-success">
+            <i class="ti ti-circle-check" style="font-size:18px;"></i>
+            {{ session('success') }}
           </div>
         @endif
 
         @if($errors->any())
-          <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg font-medium">
-            <ul class="list-disc list-inside">
+          <div class="alert-error">
+            <ul style="margin:0;padding-left:18px;">
               @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
               @endforeach
@@ -63,30 +86,53 @@
           </div>
         @endif
 
+        {{-- INFO MASJID (read-only) --}}
         <div class="settings-card">
           <div class="settings-card-title">
-            <i class="ti ti-user"></i> Informasi Profil & Kredensial
+            <i class="ti ti-building-mosque"></i> Masjid yang Dikelola
           </div>
-
           <div class="settings-grid">
             <div class="settings-field">
-              <label>Nama Lengkap</label>
-              <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $user->nama_lengkap) }}" required>
+              <label>Nama Masjid</label>
+              <input type="text" value="{{ $masjid->nama_masjid ?? '-' }}" disabled>
             </div>
             <div class="settings-field">
-              <label>Username</label>
-              <input type="text" name="username" value="{{ old('username', $user->username) }}" required>
+              <label>Ranting / PRM</label>
+              <input type="text" value="{{ session('nama_ranting', '-') }}" disabled>
             </div>
             <div class="settings-field">
-              <label>Alamat Email</label>
-              <input type="email" name="email" value="{{ old('email', $user->email) }}">
+              <label>Kecamatan</label>
+              <input type="text" value="{{ $masjid->kecamatan ?? '-' }}" disabled>
             </div>
             <div class="settings-field">
-              <label>No. HP</label>
-              <input type="text" name="no_hp" id="pmHpInput" value="{{ old('no_hp', $user->no_hp) }}">
+              <label>Status Data</label>
+              <input type="text" value="{{ ucfirst($masjid->status_data ?? '-') }}" disabled>
+            </div>
+          </div>
+          <p class="info-note">
+            <i class="ti ti-info-circle"></i>
+            Data masjid hanya dapat diubah melalui fitur Informasi Masjid dan disetujui oleh Admin Cabang.
+          </p>
+        </div>
+
+        {{-- KREDENSIAL LOGIN --}}
+        <div class="settings-card">
+          <div class="settings-card-title">
+            <i class="ti ti-lock"></i> Kredensial Login
+          </div>
+          <div class="settings-grid">
+            <div class="settings-field">
+              <label>Username Login</label>
+              <input type="text" name="default_username"
+                     value="{{ old('default_username', $masjid->default_username ?? '') }}"
+                     required placeholder="Username untuk login">
+            </div>
+            <div class="settings-field" style="grid-column:1/-1;max-width:420px;">
+              <label style="color:var(--gray-400);">Email (tidak dapat diubah)</label>
+              <input type="text" value="{{ $masjid->email ?? '-' }}" disabled>
             </div>
             <div class="settings-field">
-              <label>Password Baru (Kosongkan jika tidak diubah)</label>
+              <label>Password Baru <span style="font-weight:400;color:var(--gray-400);">(kosongkan jika tidak diubah)</span></label>
               <input type="password" name="password" placeholder="Minimal 6 karakter">
             </div>
             <div class="settings-field">
@@ -96,49 +142,10 @@
           </div>
         </div>
 
-        <div class="settings-card">
-          <div class="settings-card-title">
-            <i class="ti ti-building-mosque"></i> Masjid yang Dikelola
-          </div>
-
-          <div class="settings-grid">
-            <div class="settings-field">
-              <label>Nama Masjid</label>
-              <input type="text" value="{{ session('nama_masjid', 'Masjid Agung Batam') }}" disabled>
-            </div>
-            <div class="settings-field">
-              <label>Status Akses</label>
-              <input type="text" value="Pengurus Masjid" disabled>
-            </div>
-          </div>
-          <p style="font-size:12px;color:var(--gray-400);margin-top:4px;">
-            Perubahan data masjid dilakukan oleh Admin Cabang melalui menu Informasi Masjid.
-          </p>
-        </div>
       </form>
 
     </main>
   </div>
 </div>
-
-<script>
-const hpInput = document.getElementById('pmHpInput');
-if (hpInput) {
-  hpInput.addEventListener('input', function (e) {
-    let val = e.target.value.replace(/\D/g, '');
-    let formatted = '';
-    if (val.length > 0) {
-      formatted += val.substring(0, 4);
-    }
-    if (val.length > 4) {
-      formatted += '-' + val.substring(4, 8);
-    }
-    if (val.length > 8) {
-      formatted += '-' + val.substring(8, 13);
-    }
-    e.target.value = formatted;
-  });
-}
-</script>
 </body>
 </html>

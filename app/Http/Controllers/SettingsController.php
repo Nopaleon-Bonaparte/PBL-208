@@ -38,8 +38,11 @@ class SettingsController extends Controller
     public function masjidIndex()
     {
         if (session('id_role') !== 'R02') return redirect('/dashboard');
-        $user = $this->getCurrentUser();
-        return view('pengurus_masjid.Settings', compact('user'));
+
+        $idMasjid = session('id_user'); // for takmir, id_user = id_masjid
+        $masjid   = DB::table('masjid')->where('id_masjid', $idMasjid)->first();
+
+        return view('pengurus_masjid.Settings', compact('masjid'));
     }
 
     public function save(Request $request)
@@ -76,6 +79,35 @@ class SettingsController extends Controller
             'email'        => $request->email,
             'phone'        => $request->no_hp
         ]);
+
+        return back()->with('success', 'Pengaturan akun berhasil disimpan.');
+    }
+
+    public function saveMasjid(Request $request)
+    {
+        if (!session('is_logged_in') || session('id_role') !== 'R02') {
+            return redirect('/login');
+        }
+
+        $idMasjid = session('id_user');
+
+        $request->validate([
+            'default_username' => 'required|string|max:100',
+            'password'         => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $updateData = [
+            'default_username' => $request->default_username,
+        ];
+
+        if ($request->filled('password')) {
+            $updateData['default_password'] = $request->password;
+        }
+
+        DB::table('masjid')->where('id_masjid', $idMasjid)->update($updateData);
+
+        // Update session
+        session(['username' => $request->default_username]);
 
         return back()->with('success', 'Pengaturan akun berhasil disimpan.');
     }
